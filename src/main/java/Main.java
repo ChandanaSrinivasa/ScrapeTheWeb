@@ -220,7 +220,7 @@ public class Main extends HttpServlet {
 				
 				for(String kw: keywordsHM.keySet())
 				{
-					if(args[0].contains(kw))
+					if(queryString.contains(kw))
 					{
 						int value = keywordsHM.get(kw);
 						keywordsHM.put(kw, value+4);
