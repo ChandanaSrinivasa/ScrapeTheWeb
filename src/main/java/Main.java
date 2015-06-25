@@ -41,9 +41,8 @@ public class Main extends HttpServlet {
       return;
     }
     
-    Connection con = Jsoup.connect(queryString);
-    con.timeout(10000);
-    con.userAgent("Mozilla");
+    Connection con = Jsoup.connect(queryString).userAgent("Mozilla").timeout(10000);
+    
     Document doc = con.get();
     
     String frequentWords[] = {"and","at","be","but","by","if","into","it","no","not","of","or","such","an","the","a","their","then","there","these","this","to","was","will","with","so","also","that","they","therefore","for","much","more","hence","is","are","why","what","how","as","on","in","-","&"," "};
