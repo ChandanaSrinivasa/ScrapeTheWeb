@@ -26,6 +26,8 @@ public class Main extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
+
+    try{
     String jsonResponse="{\"query\":";
     
     String queryString = request.getParameter("url");
@@ -243,6 +245,11 @@ public class Main extends HttpServlet {
 				
 			}
 		}
+	}
+	catch(Exception e) {
+		response.getWriter().append(e.toString());
+		response.getWriter().flush();
+	}
 }
     
   private boolean checkIfFrequentWord(String[] frequentWords,String keyWord)
