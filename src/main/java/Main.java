@@ -232,7 +232,10 @@ public class Main extends HttpServlet {
 					int maxValueInMap=(Collections.max(keywordsHM.values()));  // This will return max value in the Hashmap
 			        for (Entry<String, Integer> entry : keywordsHM.entrySet()) {  
 			            if (entry.getValue()==maxValueInMap) {
-			                System.out.println("The highest occurred word: "+ entry.getKey());     // ---- Print the key with max value in the title
+			                //System.out.println("The highest occurred word: "+ entry.getKey());     // ---- Print the key with max value in the title
+			                jsonResponse+="\""+entry.getKey()+"\"}";
+			    			response.getWriter().append(jsonResponse);
+			    			response.getWriter().flush();
 			    			return;
 			            }
 			        }
