@@ -2,10 +2,9 @@ import java.io.IOException;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.*;
+
 import java.net.URI;
 import java.net.URISyntaxException;
-
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,7 +24,7 @@ import org.jsoup.select.Elements;
 
 public class Main extends HttpServlet {
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+  protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     String jsonResponse="{\"query\":";
     
@@ -186,6 +185,14 @@ public class Main extends HttpServlet {
         }
     }
     
+  private boolean checkIfFrequentWord(String[] frequentWords,String keyWord)
+	{
+		for(String item : frequentWords) {
+		    if(item.contains(keyWord))
+		       return true;
+		}
+		return false;
+	}
 
   public static void main(String[] args) throws Exception {
     Server server = new Server(Integer.valueOf(System.getenv("PORT")));
