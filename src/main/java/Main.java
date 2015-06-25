@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jsoup.Jsoup;
+import org.jsoup.Jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
@@ -40,7 +41,10 @@ public class Main extends HttpServlet {
       return;
     }
     
-    Document doc = Jsoup.connect(queryString).userAgent("Mozilla").get();
+    Connection con = Jsoup.connect(queryString);
+    con.timeout(10000);
+    con.userAgent("Mozilla");
+    Document doc = con.get();
     
     String frequentWords[] = {"and","at","be","but","by","if","into","it","no","not","of","or","such","an","the","a","their","then","there","these","this","to","was","will","with","so","also","that","they","therefore","for","much","more","hence","is","are","why","what","how","as","on","in","-","&"," "};
     
