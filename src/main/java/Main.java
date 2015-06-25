@@ -41,7 +41,9 @@ public class Main extends HttpServlet {
       return;
     }
     
-    Connection con = Jsoup.connect(queryString).userAgent("Mozilla").timeout(10000);
+    Connection con = Jsoup.connect(queryString);
+    con.userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36");
+    con.timeout(10000);
     
     Document doc = con.get();
     
