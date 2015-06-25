@@ -47,7 +47,7 @@ public class Main extends HttpServlet {
     
     Document doc = con.get();
     
-    String frequentWords[] = {"and","at","be","but","by","if","into","it","no","not","of","or","such","an","the","a","their","then","there","these","this","to","was","will","with","so","also","that","they","therefore","for","much","more","hence","is","are","why","what","how","as","on","in","-","&"," "};
+    String frequentWords[] = {"other","sure","others","and","at","be","but","by","if","into","it","no","not","of","or","such","an","the","a","their","then","there","these","this","to","was","will","with","so","also","that","they","therefore","for","much","more","hence","is","are","why","what","how","as","on","in","-","&"," "};
     
     boolean titleFound = false;
     String titleRequired = "";
