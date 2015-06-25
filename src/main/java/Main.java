@@ -173,23 +173,84 @@ public class Main extends HttpServlet {
       System.out.println("Key: "+item+"   Value: "+value);
     }*/
     
-    int maxValueInMap=(Collections.max(keywordsHM.values()));  // This will return max value in the Hashmap
-        for (Entry<String, Integer> entry : keywordsHM.entrySet()) {  
-            if (entry.getValue()==maxValueInMap) {
-                //System.out.println("The highest occurred word: "+ entry.getKey());     // ---- Print the key with max value
-                jsonResponse+="\""+entry.getKey()+"\"}";
-          response.getWriter().append(jsonResponse);
-          response.getWriter().flush();
-          return;
-            }
-        }
-    }
+    if(!keywordsHM.isEmpty())
+		{
+			int maxValueInMap=(Collections.max(keywordsHM.values()));  // This will return max value in the Hashmap
+	        for (Entry<String, Integer> entry : keywordsHM.entrySet()) {  
+	            if (entry.getValue()==maxValueInMap) {
+	                //System.out.println("The highest occurred word: "+ entry.getKey());     // ---- Print the key with max value
+	                jsonResponse+="\""+entry.getKey()+"\"}";
+	    			response.getWriter().append(jsonResponse);
+	    			response.getWriter().flush();
+	    			return;
+	            }
+	        }
+		}
+
+		else
+		{
+			if(titleFound)
+			{
+				List<String> titleWordsList = new ArrayList<String>();
+				titleWordsList = (List<String>) Arrays.asList(titleRequired.split(" "));
+				
+				for(String keyWord : titleWordsList)
+				{
+					int count = 1;
+					keyWord = keyWord.replace(",", "");
+					keyWord = keyWord.replace(".", "");
+					keyWord = keyWord.replace(":", "");
+					keyWord = keyWord.replace("*", "");
+					keyWord = keyWord.toLowerCase();
+					boolean frequentWord = checkIfFrequentWord(frequentWords,keyWord);
+					if(!frequentWord)
+					{
+						if(keywordsHM.get(keyWord)==null)
+						{
+							keywordsHM.put(keyWord,count);
+						}
+						else
+						{
+							int cnt = keywordsHM.get(keyWord);
+							keywordsHM.put(keyWord, ++cnt);
+						}
+					}
+					
+				}
+				
+				for(String kw: keywordsHM.keySet())
+				{
+					if(args[0].contains(kw))
+					{
+						int value = keywordsHM.get(kw);
+						keywordsHM.put(kw, value+4);
+					}
+				}
+				
+				if(!keywordsHM.isEmpty())
+				{
+					int maxValueInMap=(Collections.max(keywordsHM.values()));  // This will return max value in the Hashmap
+			        for (Entry<String, Integer> entry : keywordsHM.entrySet()) {  
+			            if (entry.getValue()==maxValueInMap) {
+			                System.out.println("The highest occurred word: "+ entry.getKey());     // ---- Print the key with max value in the title
+			    			return;
+			            }
+			        }
+				}
+				
+			}
+		}
+}
     
   private boolean checkIfFrequentWord(String[] frequentWords,String keyWord)
 	{
 		for(String item : frequentWords) {
 		    if(item.contains(keyWord))
 		       return true;
+		}
+		if(keyWord.matches("-?\\d+(\\.\\d+)?"))
+		{
+			return true;
 		}
 		return false;
 	}
