@@ -42,8 +42,7 @@ public class Main extends HttpServlet {
     }
     
     Connection con = Jsoup.connect(queryString);
-    con.userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36");
-    con.timeout(10000);
+    con.userAgent("Mozilla");
     
     Document doc = con.get();
     
@@ -58,7 +57,7 @@ public class Main extends HttpServlet {
     
     if (!title.isEmpty())
     { 
-      titleRequired = title;
+      titleRequired = title.replaceAll("[&]{1}.+[;]{1}", "");
       titleFound = true;
     }
     else 
@@ -117,6 +116,7 @@ public class Main extends HttpServlet {
         keyWord = keyWord.replace(".", "");
         keyWord = keyWord.replace(":", "");
         keyWord = keyWord.replace("*", "");
+        keyWord = keyWord.replaceAll("[&]{1}.+[;]{1}", "");
         keyWord = keyWord.toLowerCase();
         boolean frequentWord = checkIfFrequentWord(frequentWords,keyWord);
         if(!frequentWord)
@@ -141,6 +141,7 @@ public class Main extends HttpServlet {
       {
         int count = 5;
         keyWord = keyWord.trim();
+        keyWord = keyWord.replaceAll("[&]{1}.+[;]{1}", "");
         keyWord = keyWord.toLowerCase();
         boolean frequentWord = checkIfFrequentWord(frequentWords,keyWord);
         if(!frequentWord)
