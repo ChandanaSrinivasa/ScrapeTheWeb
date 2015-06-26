@@ -31,7 +31,7 @@ public class Main extends HttpServlet {
     try{
     String jsonResponse="{\"query\":";
     
-    String queryString = request.getParameter("url").replace("-", " ");
+    String queryString = request.getParameter("url");
     if (queryString == null) {
       response.setStatus(HttpServletResponse.SC_OK);
       jsonResponse+="\"\"}";
@@ -47,6 +47,8 @@ public class Main extends HttpServlet {
     
     Document doc = con.get();
     
+    queryString = queryString.replace("-", " ");
+
     String frequentWords[] = {"|","from","every","you","people","updates","in-the-moment","get","fascinating","friends","your","connect","login","other","others","sure","and","at","be","but","by","if","into","it","no","not","of","or","such","an","the","a","their","then","there","these","this","to","was","will","with","so","also","that","they","therefore","for","much","more","hence","is","are","why","what","how","as","on","in","-","&"," "};
     
     boolean titleFound = false;
