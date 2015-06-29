@@ -29,6 +29,7 @@ public class Main extends HttpServlet {
       throws ServletException, IOException {
 
     try{
+    response.addHeader("Access-Control-Allow-Origin", "*");
     String jsonResponse="{\"query\":";
     
     String queryString = request.getParameter("url");
