@@ -30,6 +30,9 @@ public class Main extends HttpServlet {
 
     try{
     response.addHeader("Access-Control-Allow-Origin", "*");
+    response.setContentType("application/json");
+    response.setCharacterEncoding("utf-8");
+
     String jsonResponse="{\"query\":";
     
     String queryString = request.getParameter("url");
