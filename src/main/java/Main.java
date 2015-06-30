@@ -63,6 +63,17 @@ public class Main extends HttpServlet {
     { 
       titleRequired = title.replaceAll("[&]{1}.+[;]{1}", "");    //To replace HTML Codes like &#132; with ""
       titleFound = true;
+
+      if(queryString.contains("wikipedia"))
+        {
+          String kw = title.substring(0, title.indexOf("- Wikipedia") - 1);
+          if(kw.eq)
+          jsonResponse+="\""+kw+"\"}";
+          response.getWriter().append(jsonResponse);
+          response.getWriter().flush();
+          return;
+        }
+
     }
     else 
     {
