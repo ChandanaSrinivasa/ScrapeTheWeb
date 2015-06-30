@@ -67,7 +67,6 @@ public class Main extends HttpServlet {
       if(queryString.contains("wikipedia"))
         {
           String kw = title.substring(0, title.indexOf("- Wikipedia") - 1);
-          if(kw.eq)
           jsonResponse+="\""+kw+"\"}";
           response.getWriter().append(jsonResponse);
           response.getWriter().flush();
