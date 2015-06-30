@@ -52,7 +52,7 @@ public class Main extends HttpServlet {
     
     queryString = queryString.replace("-", " ");
 
-    String frequentWords[] = {"|","from","every","you","people","updates","in-the-moment","get","fascinating","friends","your","connect","login","other","others","sure","and","at","be","but","by","if","into","it","no","not","of","or","such","an","the","a","their","then","there","these","this","to","was","will","with","so","also","that","they","therefore","for","much","more","hence","is","are","why","what","how","as","on","in","-","&"," "};
+    String frequentWords[] = {"fired","add","after","saw","chief","awesome","pay","grows","consider","|","from","every","you","people","updates","in-the-moment","get","fascinating","friends","your","connect","login","other","others","sure","and","at","be","but","by","if","into","it","no","not","of","or","such","an","the","a","their","then","there","these","this","to","was","will","with","so","also","that","they","therefore","for","much","more","hence","is","are","why","what","how","as","on","in","-","&"," "};
     
     boolean titleFound = false;
     String titleRequired = "";
@@ -61,7 +61,7 @@ public class Main extends HttpServlet {
     
     if (!title.isEmpty())
     { 
-      titleRequired = title.replaceAll("[&]{1}.+[;]{1}", "");
+      titleRequired = title.replaceAll("[&]{1}.+[;]{1}", "");    //To replace HTML Codes like &#132; with ""
       titleFound = true;
     }
     else 
