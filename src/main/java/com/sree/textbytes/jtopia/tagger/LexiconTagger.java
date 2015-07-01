@@ -30,7 +30,7 @@ public class LexiconTagger extends DefaultTagger implements Tagger {
 		LinkedHashMap<String, String> tagsByTerm = new LinkedHashMap<String, String>();
 		logger.debug("Lexicon initialization started");
 		FileInputStream fileInputStream = null;
-		BufferedReader bufferedReader = null;
+		//BufferedReader bufferedReader = null;
 		try {
 			fileInputStream = new FileInputStream(lexiconFileName);
 		} catch (FileNotFoundException e) {
@@ -38,11 +38,11 @@ public class LexiconTagger extends DefaultTagger implements Tagger {
 		}
 
 		DataInputStream dataInputStream = new DataInputStream(fileInputStream);
-		bufferedReader = new BufferedReader(new InputStreamReader(
-				dataInputStream));
+		//bufferedReader = new BufferedReader(new InputStreamReader(
+		//		dataInputStream));
 		String line = "";
 		try {
-			while ((line = bufferedReader.readLine()) != null) {
+			while ((line = dataInputStream.readLine()) != null) {
 				String[] terms = line.split(" ");
 				tagsByTerm.put(terms[0], terms[1]);
 			}
