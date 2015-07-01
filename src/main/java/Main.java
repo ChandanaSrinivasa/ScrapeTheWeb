@@ -66,8 +66,11 @@ public class Main extends HttpServlet {
       //System.out.println("body: "+body.text());
 
     String topWords[] = returnKeywords(body.text());
+    String topWord = "";
+    for(String str : topWords)
+        topWord=topWord+str+" ";
 
-    response.getWriter().append(topWords);
+    response.getWriter().append(topWord);
 
     boolean titleFound = false;
     String titleRequired = "";
