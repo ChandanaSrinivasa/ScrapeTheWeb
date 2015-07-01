@@ -32,7 +32,7 @@ public class LexiconTagger extends DefaultTagger implements Tagger {
 		FileInputStream fileInputStream = null;
 		BufferedReader bufferedReader = null;
 		try {
-			fileInputStream = new FileInputStream(lexiconFileName);
+			fileInputStream = new FileInputStream(this.getClass().getResourceAsStream(lexiconFileName));
 		} catch (FileNotFoundException e) {
 			logger.error(e.toString(), e);
 		}
