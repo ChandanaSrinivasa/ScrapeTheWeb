@@ -52,7 +52,7 @@ public class Main extends HttpServlet {
     
     queryString = queryString.replace("-", " ");
 
-    String frequentWords[] = {"fired","add","after","saw","chief","awesome","pay","grows","consider","|","from","every","you","people","updates","in-the-moment","get","fascinating","friends","your","connect","login","other","others","sure","and","at","be","but","by","if","into","it","no","not","of","or","such","an","the","a","their","then","there","these","this","to","was","will","with","so","also","that","they","therefore","for","much","more","hence","is","are","why","what","how","as","on","in","-","&"," "};
+    String frequentWords[] = {"need","fired","add","after","saw","chief","awesome","pay","grows","consider","|","from","every","you","people","updates","in-the-moment","get","fascinating","friends","your","connect","login","other","others","sure","and","at","be","but","by","if","into","it","no","not","of","or","such","an","the","a","their","then","there","these","this","to","was","will","with","so","also","that","they","therefore","for","much","more","hence","is","are","why","what","how","as","on","in","-","&"," "};
     
     boolean titleFound = false;
     String titleRequired = "";
