@@ -29,7 +29,7 @@ public class OpenNLPTagger extends DefaultTagger implements Tagger {
 	 */
 	public void initialize(String lexiconFileName) {
 		try {
-			modelStream = new FileInputStream(lexiconFileName);
+			modelStream = this.getClass().getResourceAsStream(lexiconFileName);
 			POSModel model = new POSModel(modelStream);
 			tagger = new POSTaggerME(model);
 		} catch (IOException e) {

@@ -65,9 +65,9 @@ public class Main extends HttpServlet {
       
       //System.out.println("body: "+body.text());
 
-    String topWord = returnKeywords(body.text());
+    String topWords[] = returnKeywords(body.text());
 
-    response.getWriter().append(topWord);
+    response.getWriter().append(topWords);
 
     boolean titleFound = false;
     String titleRequired = "";
@@ -357,13 +357,13 @@ public class Main extends HttpServlet {
 
           it.remove(); // avoids a ConcurrentModificationException
       }
-      String topWord = "";
+      String topWords[] = new String[5];
       for (int i = 0 ; i < TOTAL_TERMS_OUTPUT ; i++) {
         //System.out.println(topTerms[i] + " = " + topTermCount[i]);
-        topWord = topTerms[i];
+        topWords[i]= topTerms[i];
       }
 
-      return topWord;
+      return topWords;
   }
 
   public static void main(String[] args) throws Exception {
