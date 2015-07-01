@@ -305,7 +305,7 @@ public class Main extends HttpServlet {
 		return false;
 	}
 
-  private String returnKeywords(String body)
+  private String[] returnKeywords(String body)
   {
     //for default lexicon POS tags
     Configuration.setTaggerType("default"); 
