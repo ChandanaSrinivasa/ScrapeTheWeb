@@ -64,10 +64,10 @@ public class Main extends HttpServlet {
       
       
       //System.out.println("body: "+body.text());
-    String topWords[] = new String[5];
-    topWords[] = returnKeywords(body.text());
 
-    response.getWriter().append(topWords[0]);
+    String topWord = returnKeywords(body.text());
+
+    response.getWriter().append(topWord);
 
     boolean titleFound = false;
     String titleRequired = "";
@@ -302,7 +302,7 @@ public class Main extends HttpServlet {
 		return false;
 	}
 
-  private String[] returnKeywords(String body)
+  private String returnKeywords(String body)
   {
     //for default lexicon POS tags
     Configuration.setTaggerType("default"); 
@@ -329,7 +329,7 @@ public class Main extends HttpServlet {
     Map<String,Integer> finalTerms = topiaDoc.getExtractedTerms();
     Iterator it = finalTerms.entrySet().iterator();
 
-    final int TOTAL_TERMS_OUTPUT = 5;
+    final int TOTAL_TERMS_OUTPUT = 1;
 
     String[] topTerms = new String[TOTAL_TERMS_OUTPUT];
     int[] topTermCount = new int[TOTAL_TERMS_OUTPUT];
@@ -357,11 +357,13 @@ public class Main extends HttpServlet {
 
           it.remove(); // avoids a ConcurrentModificationException
       }
-      String topWords[] = new String[5];
+      String topWord = "";
       for (int i = 0 ; i < TOTAL_TERMS_OUTPUT ; i++) {
         //System.out.println(topTerms[i] + " = " + topTermCount[i]);
-        topWords[i] = topTerms[i];
+        topWord = topTerms[i];
       }
+
+      return topWord;
   }
 
   public static void main(String[] args) throws Exception {
