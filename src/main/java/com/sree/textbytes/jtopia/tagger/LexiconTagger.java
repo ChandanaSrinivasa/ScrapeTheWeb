@@ -28,7 +28,7 @@ public class LexiconTagger extends DefaultTagger implements Tagger {
 	 */
 	public LinkedHashMap<String, String> initialize(String lexiconFileName) {
 		LinkedHashMap<String, String> tagsByTerm = new LinkedHashMap<String, String>();
-		logger.info("Lexicon initialization started : " + lexiconFileName);
+		logger.error("Lexicon initialization started : " + lexiconFileName);
 		FileInputStream fileInputStream = null;
 		BufferedReader bufferedReader = null;
 		try {
