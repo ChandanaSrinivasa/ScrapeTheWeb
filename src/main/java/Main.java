@@ -34,7 +34,7 @@ public class Main extends HttpServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
-    try{
+    //try{
     response.addHeader("Access-Control-Allow-Origin", "*");
     response.setContentType("application/json");
     response.setCharacterEncoding("utf-8");
@@ -282,11 +282,11 @@ public class Main extends HttpServlet {
 				
 			}
 		}
-	}
-	catch(Exception e) {
-		response.getWriter().append("Error:" + e.toString());
-		response.getWriter().flush();
-	}
+	//}
+	//catch(Exception e) {
+	//	response.getWriter().append("Error:" + e.toString());
+	//	response.getWriter().flush();
+	//}
 }
     
   private boolean checkIfFrequentWord(String[] frequentWords,String keyWord)
@@ -319,8 +319,8 @@ public class Main extends HttpServlet {
     // if tagger type is "stanford "
     //Configuration.setModelFileLocation("model/stanford/english-left3words-distsim.tagger");
     
-        TermsExtractor termExtractor = new TermsExtractor();
-        TermDocument topiaDoc = new TermDocument();
+    TermsExtractor termExtractor = new TermsExtractor();
+    TermDocument topiaDoc = new TermDocument();
                 
     topiaDoc = termExtractor.extractTerms(body);
     //logger.info("Extracted terms : "+topiaDoc.getExtractedTerms());
