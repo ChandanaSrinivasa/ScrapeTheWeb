@@ -54,6 +54,12 @@ public class Main extends HttpServlet {
 
     String frequentWords[] = {"need","fired","add","after","saw","chief","awesome","pay","grows","consider","|","from","every","you","people","updates","in-the-moment","get","fascinating","friends","your","connect","login","other","others","sure","and","at","be","but","by","if","into","it","no","not","of","or","such","an","the","a","their","then","there","these","this","to","was","will","with","so","also","that","they","therefore","for","much","more","hence","is","are","why","what","how","as","on","in","-","&"," "};
     
+    Elements body = doc.select("body");
+      
+      
+      //System.out.println("body: "+body.text());
+    returnKeywords(body.text());
+
     boolean titleFound = false;
     String titleRequired = "";
     
@@ -286,6 +292,67 @@ public class Main extends HttpServlet {
 		}
 		return false;
 	}
+
+  private void returnKeywords(String body)
+  {
+    //for default lexicon POS tags
+    Configuration.setTaggerType("default"); 
+    // for openNLP POS tagger
+    //Configuration.setTaggerType("openNLP");
+    //for Stanford POS tagger
+    //Configuration.setTaggerType("stanford"); 
+    Configuration.setSingleStrength(3);
+    Configuration.setNoLimitStrength(2);
+    // if tagger type is "openNLP" then give the openNLP POS tagger path
+    //Configuration.setModelFileLocation("model/openNLP/en-pos-maxent.bin"); 
+    // if tagger type is "default" then give the default POS lexicon file
+    Configuration.setModelFileLocation("model/default/english-lexicon.txt");
+    // if tagger type is "stanford "
+    //Configuration.setModelFileLocation("model/stanford/english-left3words-distsim.tagger");
+    
+        TermsExtractor termExtractor = new TermsExtractor();
+        TermDocument topiaDoc = new TermDocument();
+                
+    topiaDoc = termExtractor.extractTerms(body);
+    //logger.info("Extracted terms : "+topiaDoc.getExtractedTerms());
+    //logger.info("Final Filtered Terms : "+topiaDoc.getFinalFilteredTerms());
+
+    Map<String,Integer> finalTerms = topiaDoc.getExtractedTerms();
+    Iterator it = finalTerms.entrySet().iterator();
+
+    final int TOTAL_TERMS_OUTPUT = 5;
+
+    String[] topTerms = new String[TOTAL_TERMS_OUTPUT];
+    int[] topTermCount = new int[TOTAL_TERMS_OUTPUT];
+
+    int fistTotalTerms = 0;
+
+    while (it.hasNext()) {
+          Map.Entry pair = (Map.Entry)it.next();
+          //logger.info(pair.getKey() + " = " + pair.getValue());
+
+          if (fistTotalTerms < TOTAL_TERMS_OUTPUT) {
+            topTerms[fistTotalTerms] = (String)pair.getKey();
+            topTermCount[fistTotalTerms] = (Integer)pair.getValue();
+            fistTotalTerms++;
+          }
+          else {
+            for (int i = 0 ; i < TOTAL_TERMS_OUTPUT ; i++) {
+              if (topTermCount[i] < (Integer)pair.getValue()) {
+                topTerms[i] = (String)pair.getKey();
+                topTermCount[i] = (Integer)pair.getValue();
+                break;
+              }
+            }
+          }
+
+          it.remove(); // avoids a ConcurrentModificationException
+      }
+
+      for (int i = 0 ; i < TOTAL_TERMS_OUTPUT ; i++) {
+        System.out.println(topTerms[i] + " = " + topTermCount[i]);
+      }
+  }
 
   public static void main(String[] args) throws Exception {
     Server server = new Server(Integer.valueOf(System.getenv("PORT")));
