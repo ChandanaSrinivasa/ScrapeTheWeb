@@ -67,6 +67,6 @@
                     <include>**/*</include>
                 </includes>
             </resource>
-        </resources>
+    </resources>
   </build>
 </project>

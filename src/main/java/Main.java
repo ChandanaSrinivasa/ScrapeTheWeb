@@ -315,7 +315,7 @@ public class Main extends HttpServlet {
     // if tagger type is "openNLP" then give the openNLP POS tagger path
     //Configuration.setModelFileLocation("model/openNLP/en-pos-maxent.bin"); 
     // if tagger type is "default" then give the default POS lexicon file
-    Configuration.setModelFileLocation("model/default/english-lexicon.txt");
+    Configuration.setModelFileLocation("/model/default/english-lexicon.txt");
     // if tagger type is "stanford "
     //Configuration.setModelFileLocation("model/stanford/english-left3words-distsim.tagger");
     
