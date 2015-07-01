@@ -29,11 +29,11 @@ public class LexiconTagger extends DefaultTagger implements Tagger {
 	public LinkedHashMap<String, String> initialize(String lexiconFileName) {
 		LinkedHashMap<String, String> tagsByTerm = new LinkedHashMap<String, String>();
 		System.out.println("Lexicon initialization started : " + lexiconFileName);
-		FileInputStream fileInputStream = null;
+		InputStream fileInputStream = null;
 		BufferedReader bufferedReader = null;
 		try {
-			fileInputStream = new FileInputStream(this.getClass().getResourceAsStream(lexiconFileName));
-		} catch (FileNotFoundException e) {
+			fileInputStream = this.getClass().getResourceAsStream(lexiconFileName);
+		} catch (Exception e) {
 			logger.error(e.toString(), e);
 		}
 
