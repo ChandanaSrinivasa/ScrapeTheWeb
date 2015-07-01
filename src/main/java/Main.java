@@ -23,6 +23,10 @@ import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import com.sree.textbytes.jtopia.Configuration;
+import com.sree.textbytes.jtopia.TermDocument;
+import com.sree.textbytes.jtopia.TermsExtractor;
+
 public class Main extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
