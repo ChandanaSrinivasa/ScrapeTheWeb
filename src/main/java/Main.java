@@ -64,7 +64,10 @@ public class Main extends HttpServlet {
       
       
       //System.out.println("body: "+body.text());
-    returnKeywords(body.text());
+    String topWords[] = new String[5];
+    topWords[] = returnKeywords(body.text());
+
+    response.getWriter().append(topWords[0]);
 
     boolean titleFound = false;
     String titleRequired = "";
@@ -299,7 +302,7 @@ public class Main extends HttpServlet {
 		return false;
 	}
 
-  private void returnKeywords(String body)
+  private String[] returnKeywords(String body)
   {
     //for default lexicon POS tags
     Configuration.setTaggerType("default"); 
@@ -354,9 +357,10 @@ public class Main extends HttpServlet {
 
           it.remove(); // avoids a ConcurrentModificationException
       }
-
+      String topWords[] = new String[5];
       for (int i = 0 ; i < TOTAL_TERMS_OUTPUT ; i++) {
-        System.out.println(topTerms[i] + " = " + topTermCount[i]);
+        //System.out.println(topTerms[i] + " = " + topTermCount[i]);
+        topWords[i] = topTerms[i];
       }
   }
 
