@@ -34,7 +34,7 @@ public class Main extends HttpServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
-    //try{
+    try{
     response.addHeader("Access-Control-Allow-Origin", "*");
     response.setContentType("application/json");
     response.setCharacterEncoding("utf-8");
@@ -217,19 +217,37 @@ public class Main extends HttpServlet {
     
     if(!keywordsHM.isEmpty())
 		{
-			int maxValueInMap=(Collections.max(keywordsHM.values()));  // This will return max value in the Hashmap
 	        for (Entry<String, Integer> entry : keywordsHM.entrySet()) {  
-	            if (entry.getValue()==maxValueInMap) {
-	                //System.out.println("The highest occurred word: "+ entry.getKey());     // ---- Print the key with max value
-	                jsonResponse+="\""+entry.getKey()+"\"}";
-	    			response.getWriter().append(jsonResponse);
-	    			response.getWriter().flush();
-	    			return;
-	            }
+	            // if (entry.getValue()==maxValueInMap) {
+	            //     //System.out.println("The highest occurred word: "+ entry.getKey());     // ---- Print the key with max value
+	            //     jsonResponse+="\""+entry.getKey()+"\"}";
+      	    		// 	response.getWriter().append(jsonResponse);
+      	    		// 	response.getWriter().flush();
+      	    		// 	return;
+	            // }
+
+              for(String str : topWords)
+              {
+                if(entry.getValue()==str)
+                {
+                  int value = entry.getKey();
+                  keywordsHM.put(entry.getValue(), value+5);
+                }
+              }
+
 	        }
+          int maxValueInMap=(Collections.max(keywordsHM.values()));  // This will return max value in the Hashmap
+          for (Entry<String, Integer> entry : keywordsHM.entrySet()) {  
+               if (entry.getValue()==maxValueInMap) {
+                  //System.out.println("The highest occurred word: "+ entry.getKey());     // ---- Print the key with max value
+                    jsonResponse+="\""+entry.getKey()+"\"}";
+                    response.getWriter().append(jsonResponse);
+                    response.getWriter().flush();
+                    return;
+               }
 		}
 
-		else
+		else              //IF META TAGS NOT PRESENT THEN
 		{
 			if(titleFound)
 			{
@@ -271,25 +289,35 @@ public class Main extends HttpServlet {
 				
 				if(!keywordsHM.isEmpty())
 				{
-					int maxValueInMap=(Collections.max(keywordsHM.values()));  // This will return max value in the Hashmap
-			        for (Entry<String, Integer> entry : keywordsHM.entrySet()) {  
-			            if (entry.getValue()==maxValueInMap) {
-			                //System.out.println("The highest occurred word: "+ entry.getKey());     // ---- Print the key with max value in the title
-			                jsonResponse+="\""+entry.getKey()+"\"}";
-			    			response.getWriter().append(jsonResponse);
-			    			response.getWriter().flush();
-			    			return;
-			            }
-			        }
-				}
+          for (Entry<String, Integer> entry : keywordsHM.entrySet()) {  
+  					for(String str : topWords)
+                {
+                  if(entry.getValue()==str)
+                  {
+                    int value = entry.getKey();
+                    keywordsHM.put(entry.getValue(), value+5);
+                  }
+                }
+
+            }
+            int maxValueInMap=(Collections.max(keywordsHM.values()));  // This will return max value in the Hashmap
+            for (Entry<String, Integer> entry : keywordsHM.entrySet()) {  
+                 if (entry.getValue()==maxValueInMap) {
+                    //System.out.println("The highest occurred word: "+ entry.getKey());     // ---- Print the key with max value
+                      jsonResponse+="\""+entry.getKey()+"\"}";
+                      response.getWriter().append(jsonResponse);
+                      response.getWriter().flush();
+                      return;
+                 }
+  				  }
 				
 			}
 		}
-	//}
-	//catch(Exception e) {
-	//	response.getWriter().append("Error:" + e.toString());
-	//	response.getWriter().flush();
-	//}
+	}
+	catch(Exception e) {
+		response.getWriter().append("Error:" + e.toString());
+		response.getWriter().flush();
+	}
 }
     
   private boolean checkIfFrequentWord(String[] frequentWords,String keyWord)
@@ -332,7 +360,7 @@ public class Main extends HttpServlet {
     Map<String,Integer> finalTerms = topiaDoc.getExtractedTerms();
     Iterator it = finalTerms.entrySet().iterator();
 
-    final int TOTAL_TERMS_OUTPUT = 1;
+    final int TOTAL_TERMS_OUTPUT = 5;
 
     String[] topTerms = new String[TOTAL_TERMS_OUTPUT];
     int[] topTermCount = new int[TOTAL_TERMS_OUTPUT];
