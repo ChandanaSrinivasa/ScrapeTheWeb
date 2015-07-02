@@ -228,10 +228,10 @@ public class Main extends HttpServlet {
 
               for(String str : topWords)
               {
-                if(entry.getValue()==str)
+                if(entry.getKey()==str)
                 {
-                  int value = entry.getKey();
-                  keywordsHM.put(entry.getValue(), value+5);
+                  int value = entry.getValue();
+                  keywordsHM.put(entry.getKey(), value+5);
                 }
               }
 
@@ -293,10 +293,10 @@ public class Main extends HttpServlet {
           for (Entry<String, Integer> entry : keywordsHM.entrySet()) {  
   					for(String str : topWords)
                 {
-                  if(entry.getValue()==str)
+                  if(entry.getKey()==str)
                   {
-                    int value = entry.getKey();
-                    keywordsHM.put(entry.getValue(), value+5);
+                    int value = entry.getValue();
+                    keywordsHM.put(entry.getKey(), value+5);
                   }
                 }
 
