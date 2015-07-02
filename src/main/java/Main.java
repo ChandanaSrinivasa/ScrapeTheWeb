@@ -315,6 +315,7 @@ public class Main extends HttpServlet {
 			  }
 		  }
 	  }
+}
 	catch(Exception e) {
 		response.getWriter().append("Error:" + e.toString());
 		response.getWriter().flush();
