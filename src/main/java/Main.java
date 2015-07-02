@@ -70,7 +70,7 @@ public class Main extends HttpServlet {
     for(String str : topWords)
         topWord=topWord+str+" ";
 
-    response.getWriter().append(topWord);
+    System.out.println(topWord);
 
     boolean titleFound = false;
     String titleRequired = "";
