@@ -245,7 +245,8 @@ public class Main extends HttpServlet {
                     response.getWriter().flush();
                     return;
                }
-		}
+		      }
+    }
 
 		else              //IF META TAGS NOT PRESENT THEN
 		{
@@ -311,9 +312,9 @@ public class Main extends HttpServlet {
                  }
   				  }
 				
-			}
-		}
-	}
+			  }
+		  }
+	  }
 	catch(Exception e) {
 		response.getWriter().append("Error:" + e.toString());
 		response.getWriter().flush();
