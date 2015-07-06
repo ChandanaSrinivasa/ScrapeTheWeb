@@ -198,9 +198,9 @@ public class Main extends HttpServlet {
         response.setCharacterEncoding("utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         PrintWriter out = response.getWriter();
-        out.append("\'{\"query\":\"");
+        out.append("{\"query\":\"");
         out.append(finalQuery);
-        out.append("\"}\'");
+        out.append("\"}");
         out.flush();
     }
 
