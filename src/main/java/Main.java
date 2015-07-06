@@ -5,6 +5,8 @@ import org.eclipse.jetty.servlet.*;
 
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,15 +24,21 @@ import com.sree.textbytes.jtopia.TermDocument;
 import com.sree.textbytes.jtopia.TermsExtractor;
 
 public class Main extends HttpServlet {
+
+    private static Logger logger = Logger.getLogger("GetURLServlet");
+
     public static String frequentWords[] =
             {
-                    " need ", " fired ", " add ", " after ", " saw ", " chief ", " awesome ", " pay ", " grows ",
-                    " consider ", " | ", " from ", " every ", " you ", " people ", " updates ", " i ",
-                    " get ", " fascinating ", " friends ", " your ", " connect ", " login ", " other ", " others ",
-                    " sure ", " and ", " at ", " be ", " but ", " by ", " if ", " into ", " it ", " no ", " not ", " of ",
-                    " or ", " such ", " an ", " the ", " a ", " their ", " then ", " there ", " these ", " this ", " to ",
-                    " was ", " will ", " with ", " so ", " also ", " that ", " they ", " therefore ", " for ", " much ",
-                    " more ", " hence ", " is ", " are ", " why ", " what ", " how ", " as ", " on ", " in ", " like ", " am ", " pm "};
+                    " the ", " be ", " to ", " of ", " and ", " a ", " in ", " that ", " have ",
+                    " i ", " it ", " for ", " not ", " on ", " with ", " he ", " as ",
+                    " you ", " do ", " at ", " this ", " but ", " his ", " by ", " from ",
+                    " they ", " we ", " say ", " her ", " she ", " or ", " an ", " will ", " my ", " one ", " all ", " would ",
+                    " there ", " their ", " what ", " so ", " up ", " out ", " if ", " about ", " who ", " get ", " which ",
+                    " go ", " me ", " when ", " make ", " can ", " like ", " time ", " no ", " just ", " him ",
+                    " no ", " take ", " people ", " into ", " year ", " your ", " good ", " some ", " could ", " them ", " see ", " other ", " than ", " then ",
+                    " now ", " look ", " only ", " come ", " its ", " over ", " think ", " also ", " back ", " after ", " use ", " two ", " how ", " our ", " work ",
+                    " first ", " well ", " way ", " even ", " new ", " want ", " because ", " any ", " these ", " give ", " day ", " most ", " us "
+            };
 
     private String removeSpecialCharacters(String word)
     {
@@ -56,21 +64,21 @@ public class Main extends HttpServlet {
             Element body = doc.body();
             String txtBody = body.text().toLowerCase();
 
-            System.out.println("=========" + txtBody);
+            logger.info("=========" + txtBody);
 
             //Remove the frequest words from the body
             for (String delWords: frequentWords) {
                 txtBody = txtBody.replace(delWords, " ");
             }
 
-            System.out.println("=========" + txtBody);
+            logger.info("=========" + txtBody);
 
             //Get top 5 used keywords
             String[] topUsedWords = returnNumKeywords(txtBody, 5);
             HashMap<String, Integer> keywordList = new HashMap<String, Integer>();
 
             for (String txt: topUsedWords) {
-                System.out.println("==========" + txt);
+                logger.info("==========" + txt);
                 keywordList.put(txt, 1);
             }
 
@@ -112,18 +120,18 @@ public class Main extends HttpServlet {
 
                 if (url.toLowerCase().contains(term)) {
                     count += 10;
-                    System.out.println("========" + term + " in URL");
+                    logger.info("========" + term + " in URL");
                 }
 
                 if (title.toLowerCase().contains(term)) {
                     count += 5;
-                    System.out.println("========" + term + " in Title");
+                    logger.info("========" + term + " in Title");
                 }
 
                 for (String metaDescription : metaDescriptionList) {
                     if (metaDescription.toLowerCase().contains(term)) {
                         count += 5;
-                        System.out.println("========" + term + " in Meta Desc");
+                        logger.info("========" + term + " in Meta Desc");
                         break;
                     }
                 }
@@ -131,14 +139,14 @@ public class Main extends HttpServlet {
                 for (String metaKeyword : metaKeywordsList) {
                     if (metaKeyword.toLowerCase().contains(term)) {
                         count += 5;
-                        System.out.println("========" + term + " in Meta Key");
+                        logger.info("========" + term + " in Meta Key");
                         break;
                     }
                 }
 
                 keywordList.put(term, count);       //Give score 5 to title
 
-                System.out.println("==========Final Value:" + term + ":" + count);
+                logger.info("==========Final Value:" + term + ":" + count);
             }
 
             int NUM_KEYWORDS = 3;
@@ -149,7 +157,7 @@ public class Main extends HttpServlet {
 
             Iterator sortIT = keywordList.entrySet().iterator();
 
-            System.out.println("========Sorted List Count:" + keywordList.size());
+            logger.info("========Sorted List Count:" + keywordList.size());
 
             while (sortIT.hasNext())
             {
@@ -177,7 +185,7 @@ public class Main extends HttpServlet {
                 finalQuery += finalKeywords[j];
 
                 if (j+1 != NUM_KEYWORDS) {
-                    finalQuery += "+";
+                    finalQuery += ",";
                 }
             }
         }
@@ -487,25 +495,24 @@ public class Main extends HttpServlet {
             term = removeSpecialCharacters(term);
 
             //If its only numbers then ignore it
-            if (term.matches("[0-9]+") && term.length() > 2) {
-                continue;
-            }
-
-            if (fistTotalTerms < num)
+            if (!term.matches("[0-9]+"))
             {
-              topTerms[fistTotalTerms] = term;
-              topTermCount[fistTotalTerms] = count;
-              fistTotalTerms++;
-            }
-            else
-            {
-                for (int i = 0 ; i < num ; i++)
+                if (fistTotalTerms < num)
                 {
-                    if (topTermCount[i] < count)
+                    topTerms[fistTotalTerms] = term;
+                    topTermCount[fistTotalTerms] = count;
+                    fistTotalTerms++;
+                }
+                else
+                {
+                    for (int i = 0; i < num; i++)
                     {
-                        topTerms[i] = term;
-                        topTermCount[i] = count;
-                        break;
+                        if (topTermCount[i] < count)
+                        {
+                            topTerms[i] = term;
+                            topTermCount[i] = count;
+                            break;
+                        }
                     }
                 }
             }
@@ -523,6 +530,8 @@ public class Main extends HttpServlet {
 
     public static void main(String[] args) throws Exception
     {
+        logger.setLevel(Level.INFO);            //Set the logging level here
+
         Server server = new Server(Integer.valueOf(System.getenv("PORT")));
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
