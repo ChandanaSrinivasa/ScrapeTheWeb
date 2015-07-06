@@ -40,7 +40,7 @@ public class Main extends HttpServlet {
                     " them ", " see ", " other ", " than ", " then ", " now ", " look ", " only ",
                     " come ", " its ", " over ", " think ", " also ", " back ", " after ", " use ",
                     " two ", " how ", " our ", " work ", " first ", " well ", " way ", " even ",
-                    " new ", " want ", " because ", " any ", " these ", " give ", " day ", " most ", " us "
+                    " new ", " want ", " because ", " any ", " these ", " give ", " day ", " most ", " us ", ".com"
             };
 
     private String removeSpecialCharacters(String word)
@@ -198,9 +198,9 @@ public class Main extends HttpServlet {
         response.setCharacterEncoding("utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         PrintWriter out = response.getWriter();
-        out.append("{\"query\":\"");
+        out.append("\'{\"query\":\"");
         out.append(finalQuery);
-        out.append("\"}");
+        out.append("\"}\'");
         out.flush();
     }
 
