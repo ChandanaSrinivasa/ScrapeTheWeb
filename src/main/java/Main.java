@@ -302,7 +302,7 @@ public class Main extends HttpServlet {
 
     private static void startNLP() throws IOException {
         File file = new File(".");
-        String path = file.getCanonicalPath() + "/data";
+        String path = "https://drive.google.com/open?id=0B4OaZL2O5H03fnFmMFRsOVFZbVpuSkxieEljXzl2QUh6ZTNBei1heUgyQkRkMUt0TkFEbVU";
 
         Properties props = new Properties();
         props.setProperty("sighanCorporaDict", path);
