@@ -63,6 +63,7 @@ public class Main extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String finalQuery = "";
         String url = request.getParameter("url");
+        String redirectURL = request.getParameter("redirect_url");
 
         if (url != null) {
             //Get the HTML Body
@@ -203,6 +204,9 @@ public class Main extends HttpServlet {
                     finalQuery += ",";
                 }
             }
+        } else if (redirectURL != null) {
+            response.sendRedirect(redirectURL);
+            return;
         }
 
         response.addHeader("Access-Control-Allow-Origin", "*");
