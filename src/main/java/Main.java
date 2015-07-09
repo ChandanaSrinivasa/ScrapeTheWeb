@@ -1,4 +1,3 @@
-
 import java.io.File;
 import java.io.IOException;
 
@@ -44,7 +43,7 @@ public class Main extends HttpServlet {
             logger.info("loading StopWords...");
             File file = new File(".");
             return new HashSet<String>(Files.readAllLines(Paths.get(file.getCanonicalPath(), "stopwords.txt"), StandardCharsets.UTF_8));
-        } catch(IOException e) {
+        } catch (IOException e) {
             System.err.println("error when load stop words");
         }
         return null;
@@ -52,13 +51,16 @@ public class Main extends HttpServlet {
 
     // replace punctuations with spaces
     private String removeSpecialCharacters(String word) {
-        String PUNCTUATION_ZH = "\\p{P}";
-        word = word.replace(PUNCTUATION_ZH, " ");
+        word = word.replace(",", "");
+        word = word.replace(".", "");
+        word = word.replace(":", "");
+        word = word.replace("*", "");
+        word = word.replaceAll("[&].{2,6}[;]", "");
+        word = word.toLowerCase();
         return word;
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String finalQuery = "";
         String url = request.getParameter("url");
 
@@ -69,35 +71,24 @@ public class Main extends HttpServlet {
             Document doc = con.get();
             Element body = doc.body();
             String txtBody = body.text().toLowerCase();
-            txtBody = txtBody.replaceAll("\\p{P}", " ");
-
             logger.info("====original body=====" + txtBody);
 
-//            logger.info("===stopwords===");
-//            for(String s: stopWords) {
-//                logger.info(s + ", ");
-//            }
+            txtBody = txtBody.replaceAll("[&].{2,6}[;]", " ");
+            txtBody = txtBody.replaceAll("\\p{P}", " ");
 
-            // token:
+            // token words
             List<String> tokenWords = segmenter.segmentString(txtBody);
 
-
             //Remove the frequest words from the body
-
             StringBuilder newBody = new StringBuilder();
 
-            for(String word : tokenWords) {
-                if(stopWords.contains(word)) {
-                    System.out.println("stopWords: " + word);
-                } else {
+            for (String word : tokenWords) {
+                if (!stopWords.contains(word)) {
                     newBody.append(word);
                     newBody.append(" ");
                 }
             }
-//
-//            for (String delWords: stopWords) {
-//                txtBody = txtBody.replace(delWords, " ");
-//            }
+
             txtBody = newBody.toString();
 
             logger.info("====without stopwords=====" + txtBody);
@@ -106,7 +97,7 @@ public class Main extends HttpServlet {
             String[] topUsedWords = returnNumKeywords(txtBody, 5);
             HashMap<String, Integer> keywordList = new HashMap<String, Integer>();
 
-            for (String txt: topUsedWords) {
+            for (String txt : topUsedWords) {
                 logger.info("=====top Used Words=====" + txt);
                 keywordList.put(txt, 1);
             }
@@ -120,8 +111,7 @@ public class Main extends HttpServlet {
 
             String metaTagDescriptionContent;
 
-            if (!metaLinksForDescription.isEmpty())
-            {
+            if (!metaLinksForDescription.isEmpty()) {
                 metaTagDescriptionContent = metaLinksForDescription.first().attr("content");
                 metaDescriptionList = Arrays.asList(metaTagDescriptionContent.split(" "));
             }
@@ -132,10 +122,9 @@ public class Main extends HttpServlet {
 
             String metaTagKeywordscontent;
 
-            if (!metaLinksForKeywords.isEmpty())
-            {
+            if (!metaLinksForKeywords.isEmpty()) {
                 metaTagKeywordscontent = metaLinksForKeywords.first().attr("content");
-                metaKeywordsList = (List<String>) Arrays.asList(metaTagKeywordscontent.split(","));
+                metaKeywordsList = Arrays.asList(metaTagKeywordscontent.split(","));
             }
 
             //Figure out the top most keyword now
@@ -186,18 +175,17 @@ public class Main extends HttpServlet {
 
             logger.info("========Sorted List Count:" + keywordList.size());
 
-            while (sortIT.hasNext())
-            {
+            while (sortIT.hasNext()) {
                 Map.Entry pair = (Map.Entry) sortIT.next();
 
-                String term = (String)pair.getKey();
-                int score = (Integer)pair.getValue();
+                String term = (String) pair.getKey();
+                int score = (Integer) pair.getValue();
 
                 if (i < NUM_KEYWORDS) {
                     finalKeywords[i] = term;
                     finalKeywordsScore[i] = score;
                 } else {
-                    for (int j = 0 ; j < NUM_KEYWORDS ; j++) {
+                    for (int j = 0; j < NUM_KEYWORDS; j++) {
                         if (finalKeywordsScore[j] < score) {
                             finalKeywords[j] = term;
                             finalKeywordsScore[j] = score;
@@ -208,10 +196,10 @@ public class Main extends HttpServlet {
                 i++;
             }
 
-            for (int j = 0 ; j < NUM_KEYWORDS ; j++) {
+            for (int j = 0; j < NUM_KEYWORDS; j++) {
                 finalQuery += finalKeywords[j];
 
-                if (j+1 != NUM_KEYWORDS) {
+                if (j + 1 != NUM_KEYWORDS) {
                     finalQuery += ",";
                 }
             }
@@ -228,33 +216,13 @@ public class Main extends HttpServlet {
         out.flush();
     }
 
-    private static void startNLP() throws IOException {
-        File file = new File(".");
-        String path = file.getCanonicalPath() + "/data";
-
-        Properties props = new Properties();
-        props.setProperty("sighanCorporaDict", path);
-        props.setProperty("serDictionary", path + "/dict-chris6.ser.gz");
-        props.setProperty("inputEncoding", "UTF-8");
-        props.setProperty("sighanPostProcessing", "true");
-
-        segmenter = new CRFClassifier<CoreLabel>(props);
-        segmenter.loadClassifierNoExceptions(path + "/ctb.gz", props);
-    }
-
-
-    
-    private boolean checkIfFrequentWord(String keyWord)
-    {
-        if (keyWord.matches("-?\\d+(\\.\\d+)?"))
-        {
+    private boolean checkIfFrequentWord(String keyWord) {
+        if (keyWord.matches("-?\\d+(\\.\\d+)?")) {
             return true;
         }
 
-        for (String item : stopWords)
-        {
-            if (item.equals(keyWord))
-            {
+        for (String item : stopWords) {
+            if (item.equals(keyWord)) {
                 return true;
             }
         }
@@ -262,20 +230,17 @@ public class Main extends HttpServlet {
         return false;
     }
 
-    public class DefaultTagger
-    {
+    public class DefaultTagger {
         public String TAGGER_TYPE = "default";
         public String TAGGER_LOCATION = "/model/default/english-lexicon.txt";
     }
 
-    public class OpenNLPTagger extends DefaultTagger
-    {
+    public class OpenNLPTagger extends DefaultTagger {
         public String TAGGER_TYPE = "openNLP";
         public String TAGGER_LOCATION = "/model/openNLP/en-pos-maxent.bin";
     }
 
-    public class StanfordTagger extends DefaultTagger
-    {
+    public class StanfordTagger extends DefaultTagger {
         public String TAGGER_TYPE = "default";
         public String TAGGER_LOCATION = "/model/stanford/english-left3words-distsim.tagger";
     }
@@ -294,37 +259,30 @@ public class Main extends HttpServlet {
 
         topiaDoc = termExtractor.extractTerms(body);
 
-        Map<String,Integer> finalTerms = topiaDoc.getExtractedTerms();
+        Map<String, Integer> finalTerms = topiaDoc.getExtractedTerms();
         Iterator it = finalTerms.entrySet().iterator();
 
         String[] topTerms = new String[num];
         int[] topTermCount = new int[num];
         int fistTotalTerms = 0;
 
-        while (it.hasNext())
-        {
-            Map.Entry pair = (Map.Entry)it.next();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
 
-            String term = (String)pair.getKey();
-            int count = (Integer)pair.getValue();
+            String term = (String) pair.getKey();
+            int count = (Integer) pair.getValue();
 
             term = removeSpecialCharacters(term);
 
             //If its only numbers then ignore it
-            if (!term.matches("[0-9]+"))
-            {
-                if (fistTotalTerms < num)
-                {
+            if (!term.matches("[0-9]+")) {
+                if (fistTotalTerms < num) {
                     topTerms[fistTotalTerms] = term;
                     topTermCount[fistTotalTerms] = count;
                     fistTotalTerms++;
-                }
-                else
-                {
-                    for (int i = 0; i < num; i++)
-                    {
-                        if (topTermCount[i] < count)
-                        {
+                } else {
+                    for (int i = 0; i < num; i++) {
+                        if (topTermCount[i] < count) {
                             topTerms[i] = term;
                             topTermCount[i] = count;
                             break;
@@ -336,16 +294,27 @@ public class Main extends HttpServlet {
         }
 
         String topWords[] = new String[num];
-        for (int i = 0 ; i < num ; i++)
-        {
-            topWords[i] = topTerms[i];
-        }
+        System.arraycopy(topTerms, 0, topWords, 0, num);
 
         return topWords;
     }
 
-    public static void main(String[] args) throws Exception
-    {
+
+    private static void startNLP() throws IOException {
+        File file = new File(".");
+        String path = file.getCanonicalPath() + "/data";
+
+        Properties props = new Properties();
+        props.setProperty("sighanCorporaDict", path);
+        props.setProperty("serDictionary", path + "/dict-chris6.ser.gz");
+        props.setProperty("inputEncoding", "UTF-8");
+        props.setProperty("sighanPostProcessing", "true");
+
+        segmenter = new CRFClassifier<CoreLabel>(props);
+        segmenter.loadClassifierNoExceptions(path + "/ctb.gz", props);
+    }
+
+    public static void main(String[] args) throws Exception {
         logger.setLevel(Level.INFO);            //Set the logging level here
 
         logger.info("loading stopwords...");
@@ -359,7 +328,7 @@ public class Main extends HttpServlet {
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
         server.setHandler(context);
-        context.addServlet(new ServletHolder(new Main()),"/*");
+        context.addServlet(new ServletHolder(new Main()), "/*");
         server.start();
         server.join();
     }
