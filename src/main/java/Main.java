@@ -1,9 +1,17 @@
+
+import java.io.File;
 import java.io.IOException;
+
+import edu.stanford.nlp.ie.crf.CRFClassifier;
+import edu.stanford.nlp.ling.CoreLabel;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.*;
 
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,30 +35,25 @@ public class Main extends HttpServlet {
 
     private static Logger logger = Logger.getLogger("GetURLServlet");
 
-    public static String frequentWords[] =
-            {
-                    " the ", " be ", " to ", " of ", " and ", " a ", " in ", " that ", " have ",
-                    " i ", " it ", " for ", " not ", " on ", " with ", " he ", " as ", " you ",
-                    " do ", " at ", " this ", " but ", " his ", " by ", " from ", " they ", " we ",
-                    " say ", " her ", " she ", " or ", " an ", " will ", " my ", " one ", " all ",
-                    " would ", " there ", " their ", " what ", " so ", " up ", " out ", " if ",
-                    " about ", " who ", " get ", " which ", " go ", " me ", " when ", " make ",
-                    " can ", " like ", " time ", " no ", " just ", " him ", " no ", " take ",
-                    " people ", " into ", " year ", " your ", " good ", " some ", " could ",
-                    " them ", " see ", " other ", " than ", " then ", " now ", " look ", " only ",
-                    " come ", " its ", " over ", " think ", " also ", " back ", " after ", " use ",
-                    " two ", " how ", " our ", " work ", " first ", " well ", " way ", " even ",
-                    " new ", " want ", " because ", " any ", " these ", " give ", " day ", " most ", " us ", ".com"
-            };
+    public static Set<String> stopWords = new HashSet<String>();
+    private static CRFClassifier<CoreLabel> segmenter;
 
-    private String removeSpecialCharacters(String word)
-    {
-        word = word.replace(",", "");
-        word = word.replace(".", "");
-        word = word.replace(":", "");
-        word = word.replace("*", "");
-        word = word.replaceAll("[&]{1}.+[;]{1}", "");
-        word = word.toLowerCase();
+    // load stop words to stopWords
+    private static Set<String> loadStopWords() {
+        try {
+            logger.info("loading StopWords...");
+            File file = new File(".");
+            return new HashSet<String>(Files.readAllLines(Paths.get(file.getCanonicalPath(), "stopwords.txt"), StandardCharsets.UTF_8));
+        } catch(IOException e) {
+            System.err.println("error when load stop words");
+        }
+        return null;
+    }
+
+    // replace punctuations with spaces
+    private String removeSpecialCharacters(String word) {
+        String PUNCTUATION_ZH = "\\p{P}";
+        word = word.replace(PUNCTUATION_ZH, " ");
         return word;
     }
 
@@ -66,22 +69,45 @@ public class Main extends HttpServlet {
             Document doc = con.get();
             Element body = doc.body();
             String txtBody = body.text().toLowerCase();
+            txtBody = txtBody.replaceAll("\\p{P}", " ");
 
-            logger.info("=========" + txtBody);
+            logger.info("====original body=====" + txtBody);
+
+//            logger.info("===stopwords===");
+//            for(String s: stopWords) {
+//                logger.info(s + ", ");
+//            }
+
+            // token:
+            List<String> tokenWords = segmenter.segmentString(txtBody);
+
 
             //Remove the frequest words from the body
-            for (String delWords: frequentWords) {
-                txtBody = txtBody.replace(delWords, " ");
-            }
 
-            logger.info("=========" + txtBody);
+            StringBuilder newBody = new StringBuilder();
+
+            for(String word : tokenWords) {
+                if(stopWords.contains(word)) {
+                    System.out.println("stopWords: " + word);
+                } else {
+                    newBody.append(word);
+                    newBody.append(" ");
+                }
+            }
+//
+//            for (String delWords: stopWords) {
+//                txtBody = txtBody.replace(delWords, " ");
+//            }
+            txtBody = newBody.toString();
+
+            logger.info("====without stopwords=====" + txtBody);
 
             //Get top 5 used keywords
             String[] topUsedWords = returnNumKeywords(txtBody, 5);
             HashMap<String, Integer> keywordList = new HashMap<String, Integer>();
 
             for (String txt: topUsedWords) {
-                logger.info("==========" + txt);
+                logger.info("=====top Used Words=====" + txt);
                 keywordList.put(txt, 1);
             }
 
@@ -92,19 +118,19 @@ public class Main extends HttpServlet {
             Elements metaLinksForDescription = doc.select("meta[name=description]");
             List<String> metaDescriptionList = new ArrayList<String>();
 
-            String metaTagDescriptionContent = "";
+            String metaTagDescriptionContent;
 
             if (!metaLinksForDescription.isEmpty())
             {
                 metaTagDescriptionContent = metaLinksForDescription.first().attr("content");
-                metaDescriptionList = (List<String>) Arrays.asList(metaTagDescriptionContent.split(" "));
+                metaDescriptionList = Arrays.asList(metaTagDescriptionContent.split(" "));
             }
 
             //Meta - Keyword of the page
             Elements metaLinksForKeywords = doc.select("meta[name=keywords]");
             List<String> metaKeywordsList = new ArrayList<String>();
 
-            String metaTagKeywordscontent = "";
+            String metaTagKeywordscontent;
 
             if (!metaLinksForKeywords.isEmpty())
             {
@@ -113,10 +139,8 @@ public class Main extends HttpServlet {
             }
 
             //Figure out the top most keyword now
-            Iterator it = keywordList.entrySet().iterator();
-            while (it.hasNext())
-            {
-                Map.Entry pair = (Map.Entry) it.next();
+            for (Object o : keywordList.entrySet()) {
+                Map.Entry pair = (Map.Entry) o;
 
                 String term = (String) pair.getKey();
                 int count = (Integer) pair.getValue();
@@ -203,6 +227,22 @@ public class Main extends HttpServlet {
         out.append("\"}");
         out.flush();
     }
+
+    private static void startNLP() throws IOException {
+        File file = new File(".");
+        String path = file.getCanonicalPath() + "/data";
+
+        Properties props = new Properties();
+        props.setProperty("sighanCorporaDict", path);
+        props.setProperty("serDictionary", path + "/dict-chris6.ser.gz");
+        props.setProperty("inputEncoding", "UTF-8");
+        props.setProperty("sighanPostProcessing", "true");
+
+        segmenter = new CRFClassifier<CoreLabel>(props);
+        segmenter.loadClassifierNoExceptions(path + "/ctb.gz", props);
+    }
+
+
     
     private boolean checkIfFrequentWord(String keyWord)
     {
@@ -211,7 +251,7 @@ public class Main extends HttpServlet {
             return true;
         }
 
-        for (String item : frequentWords)
+        for (String item : stopWords)
         {
             if (item.equals(keyWord))
             {
@@ -240,8 +280,7 @@ public class Main extends HttpServlet {
         public String TAGGER_LOCATION = "/model/stanford/english-left3words-distsim.tagger";
     }
 
-    private String[] returnNumKeywords(String body, int num)
-    {
+    private String[] returnNumKeywords(String body, int num) {
         DefaultTagger tagger = new DefaultTagger();
 
         //for default lexicon POS tags
@@ -308,6 +347,13 @@ public class Main extends HttpServlet {
     public static void main(String[] args) throws Exception
     {
         logger.setLevel(Level.INFO);            //Set the logging level here
+
+        logger.info("loading stopwords...");
+        stopWords = loadStopWords();
+        logger.info("...stopwords loaded");
+        logger.info("starting NLP...");
+        startNLP();
+        logger.info("...NLP started");
 
         Server server = new Server(Integer.valueOf(System.getenv("PORT")));
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
