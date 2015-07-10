@@ -32,6 +32,16 @@ import com.sree.textbytes.jtopia.TermsExtractor;
 
 public class Main extends HttpServlet {
 
+    public static String frequentWords[] =
+                {
+                        " need ", " fired ", " add ", " after ", " saw ", " chief ", " awesome ", " pay ", " grows ",
+                        " consider ", " | ", " from ", " every ", " you ", " people ", " updates ", " i ",
+                        " get ", " fascinating ", " friends ", " your ", " connect ", " login ", " other ", " others ",
+                        " sure ", " and ", " at ", " be ", " but ", " by ", " if ", " into ", " it ", " no ", " not ", " of ",
+                        " or ", " such ", " an ", " the ", " a ", " their ", " then ", " there ", " these ", " this ", " to ",
+                        " was ", " will ", " with ", " so ", " also ", " that ", " they ", " therefore ", " for ", " much ",
+                        " more ", " hence ", " is ", " are ", " why ", " what ", " how ", " as ", " on ", " in ", " like ", " am ", " pm "};
+
     private static Logger logger = Logger.getLogger("GetURLServlet");
 
     public static Set<String> stopWords = new HashSet<String>();
@@ -72,6 +82,11 @@ public class Main extends HttpServlet {
             Element body = doc.body();
             String txtBody = body.text().toLowerCase();
             logger.info("====original body=====" + txtBody);
+
+            //Remove the frequest words from the body
+            for (String delWords: frequentWords) {
+                txtBody = txtBody.replace(delWords, " ");
+            }
 
             txtBody = txtBody.replaceAll("[&].{2,6}[;]", " ");
             txtBody = txtBody.replaceAll("\\p{P}", " ");
