@@ -34,7 +34,7 @@ public class Main extends HttpServlet {
 
     public static String frequentWords[] =
                 {
-                        " need ", " fired ", " add ", " after ", " saw ", " chief ", " awesome ", " pay ", " grows ",
+                        " need ", " fired ", " add ", " after ", " saw ", " chief ", " awesome ", " pay ", " grows ","   ",
                         " consider ", " | ", " from ", " every ", " you ", " people ", " updates ", " i ",
                         " get ", " fascinating ", " friends ", " your ", " connect ", " login ", " other ", " others ",
                         " sure ", " and ", " at ", " be ", " but ", " by ", " if ", " into ", " it ", " no ", " not ", " of ",
@@ -45,19 +45,19 @@ public class Main extends HttpServlet {
     private static Logger logger = Logger.getLogger("GetURLServlet");
 
     public static Set<String> stopWords = new HashSet<String>();
-    private static CRFClassifier<CoreLabel> segmenter;
+//    private static CRFClassifier<CoreLabel> segmenter;
 
-    // load stop words to stopWords
-    private static Set<String> loadStopWords() {
-        try {
-            logger.info("loading StopWords...");
-            File file = new File(".");
-            return new HashSet<String>(Files.readAllLines(Paths.get(file.getCanonicalPath(), "stopwords.txt"), StandardCharsets.UTF_8));
-        } catch (IOException e) {
-            System.err.println("error when load stop words");
-        }
-        return null;
-    }
+//    // load stop words to stopWords --- For Chinese
+//    private static Set<String> loadStopWords() {
+//        try {
+//            logger.info("loading StopWords...");
+//            File file = new File(".");
+//            return new HashSet<String>(Files.readAllLines(Paths.get(file.getCanonicalPath(), "stopwords.txt"), StandardCharsets.UTF_8));
+//        } catch (IOException e) {
+//            System.err.println("error when load stop words");
+//        }
+//        return null;
+//    }
 
     // replace punctuations with spaces
     private String removeSpecialCharacters(String word) {
@@ -91,20 +91,20 @@ public class Main extends HttpServlet {
             txtBody = txtBody.replaceAll("[&].{2,6}[;]", " ");
             txtBody = txtBody.replaceAll("\\p{P}", " ");
 
-            // token words
-            List<String> tokenWords = segmenter.segmentString(txtBody);
-
-            //Remove the frequest words from the body
-            StringBuilder newBody = new StringBuilder();
-
-            for (String word : tokenWords) {
-                if (!stopWords.contains(word)) {
-                    newBody.append(word);
-                    newBody.append(" ");
-                }
-            }
-
-            txtBody = newBody.toString();
+            // token words ----- FOR Chinese Words
+//            List<String> tokenWords = segmenter.segmentString(txtBody);
+//
+//            //Remove the frequest words from the body
+//            StringBuilder newBody = new StringBuilder();
+//
+//            for (String word : tokenWords) {
+//                if (!stopWords.contains(word)) {
+//                    newBody.append(word);
+//                    newBody.append(" ");
+//                }
+//            }
+//
+//            txtBody = newBody.toString();
 
             logger.info("====without stopwords=====" + txtBody);
 
@@ -231,20 +231,6 @@ public class Main extends HttpServlet {
         out.flush();
     }
 
-    private boolean checkIfFrequentWord(String keyWord) {
-        if (keyWord.matches("-?\\d+(\\.\\d+)?")) {
-            return true;
-        }
-
-        for (String item : stopWords) {
-            if (item.equals(keyWord)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public class DefaultTagger {
         public String TAGGER_TYPE = "default";
         public String TAGGER_LOCATION = "/model/default/english-lexicon.txt";
@@ -290,7 +276,7 @@ public class Main extends HttpServlet {
             term = removeSpecialCharacters(term);
 
             //If its only numbers then ignore it
-            if (!term.matches("[0-9]+")) {
+            if (!term.matches("-?\\d+(\\.\\d+)?")) {
                 if (fistTotalTerms < num) {
                     topTerms[fistTotalTerms] = term;
                     topTermCount[fistTotalTerms] = count;
@@ -315,29 +301,29 @@ public class Main extends HttpServlet {
     }
 
 
-    private static void startNLP() throws IOException {
-        File file = new File(".");
-        String path = file.getCanonicalPath() + "/data";
-
-        Properties props = new Properties();
-        props.setProperty("sighanCorporaDict", path);
-        props.setProperty("serDictionary", path + "/dict-chris6.ser.gz");
-        props.setProperty("inputEncoding", "UTF-8");
-        props.setProperty("sighanPostProcessing", "true");
-
-        segmenter = new CRFClassifier<CoreLabel>(props);
-        segmenter.loadClassifierNoExceptions(path + "/ctb.gz", props);
-    }
+//    private static void startNLP() throws IOException {   -- for chinese words
+//        File file = new File(".");
+//        String path = file.getCanonicalPath() + "/data";
+//
+//        Properties props = new Properties();
+//        props.setProperty("sighanCorporaDict", path);
+//        props.setProperty("serDictionary", path + "/dict-chris6.ser.gz");
+//        props.setProperty("inputEncoding", "UTF-8");
+//        props.setProperty("sighanPostProcessing", "true");
+//
+//        segmenter = new CRFClassifier<CoreLabel>(props);
+//        segmenter.loadClassifierNoExceptions(path + "/ctb.gz", props);
+//    }
 
     public static void main(String[] args) throws Exception {
-        logger.setLevel(Level.INFO);            //Set the logging level here
-
-        logger.info("loading stopwords...");
-        stopWords = loadStopWords();
-        logger.info("...stopwords loaded");
-        logger.info("starting NLP...");
-        startNLP();
-        logger.info("...NLP started");
+//        logger.setLevel(Level.INFO);            //Set the logging level here -- For Chinese Words
+//
+//        logger.info("loading stopwords...");
+//        stopWords = loadStopWords();
+//        logger.info("...stopwords loaded");
+//        logger.info("starting NLP...");
+//        startNLP();
+//        logger.info("...NLP started");
 
         Server server = new Server(Integer.valueOf(System.getenv("PORT")));
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
