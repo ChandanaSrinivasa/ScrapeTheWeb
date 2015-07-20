@@ -34,7 +34,7 @@ public class Main extends HttpServlet {
 
     public static String frequentWords[] =
                 {
-                        " need ", " fired ", " add ", " after ", " saw ", " chief ", " awesome ", " pay ", " grows ","   ",
+                        " need ", " fired ", " add ", " after ", " saw ", " chief ", " awesome ", " pay ", " grows ",
                         " consider ", " | ", " from ", " every ", " you ", " people ", " updates ", " i ",
                         " get ", " fascinating ", " friends ", " your ", " connect ", " login ", " other ", " others ",
                         " sure ", " and ", " at ", " be ", " but ", " by ", " if ", " into ", " it ", " no ", " not ", " of ",
@@ -65,6 +65,7 @@ public class Main extends HttpServlet {
         word = word.replace(".", "");
         word = word.replace(":", "");
         word = word.replace("*", "");
+        word = word.replace(" ", "");
         word = word.replaceAll("[&].{2,6}[;]", "");
         word = word.toLowerCase();
         return word;
