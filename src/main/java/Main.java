@@ -157,7 +157,7 @@ public class Main extends HttpServlet {
                 for (Object o : keywordList.entrySet()) {
                     Map.Entry pair = (Map.Entry) o;
 
-                    String term = (String) pair.getKey();
+                    String term = ((String) pair.getKey()).toLowerCase();
                     int count = (Integer) pair.getValue();
 
                     if (url.toLowerCase().contains(term)) {
@@ -166,7 +166,7 @@ public class Main extends HttpServlet {
                     }
 
                     if (title.toLowerCase().contains(term)) {
-                        count += 5;
+                        count += 10;
                         logger.info("========" + term + " in Title");
                     }
 
