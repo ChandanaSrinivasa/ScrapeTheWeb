@@ -83,7 +83,7 @@ public class Main extends HttpServlet {
             Document doc = con.get();
 
 
-            if (url.lastIndexOf('/') < 7)  // If the URL is like http://twitter.com or http://wikipedia.com then return just THE TITLE
+            if (url.lastIndexOf('/') <= 7)  // If the URL is like http://twitter.com or http://wikipedia.com then return just THE TITLE
             {
                 String title = doc.title();
                 finalQuery=title+",";
@@ -94,9 +94,6 @@ public class Main extends HttpServlet {
                 Element body = doc.body();
                 String txtBody = body.text().toLowerCase();
                 logger.info("====original body=====" + txtBody);
-
-
-                finalQuery = String.valueOf(url.lastIndexOf('/'));
 
                 //Remove the frequest words from the body
                 for (String delWords : frequentWords) {
