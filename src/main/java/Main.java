@@ -104,8 +104,7 @@ public class Main extends HttpServlet {
 //                    newBody.append(" ");
 //                }
 //            }
-//
-//            txtBody = newBody.toString();
+//          txtBody = newBody.toString();
 
             logger.info("====without stopwords=====" + txtBody);
 
@@ -277,7 +276,7 @@ public class Main extends HttpServlet {
             term = removeSpecialCharacters(term);
 
             //If its only numbers then ignore it
-            if (!term.matches("-?\\d+(\\.\\d+)?")) {
+            if (!term.matches("-?\\d+(\\.\\d+)?") && term.matches("[A-z]+")) {
                 if (fistTotalTerms < num) {
                     topTerms[fistTotalTerms] = term;
                     topTermCount[fistTotalTerms] = count;
