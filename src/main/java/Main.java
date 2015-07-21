@@ -44,7 +44,7 @@ public class Main extends HttpServlet {
 
     private static Logger logger = Logger.getLogger("GetURLServlet");
 
-    public static Set<String> stopWords = new HashSet<String>();
+//    public static Set<String> stopWords = new HashSet<String>();
 //    private static CRFClassifier<CoreLabel> segmenter;
 
 //    // load stop words to stopWords --- For Chinese
@@ -94,6 +94,9 @@ public class Main extends HttpServlet {
                 Element body = doc.body();
                 String txtBody = body.text().toLowerCase();
                 logger.info("====original body=====" + txtBody);
+
+
+                finalQuery = String.valueOf(url.lastIndexOf('/'));
 
                 //Remove the frequest words from the body
                 for (String delWords : frequentWords) {
