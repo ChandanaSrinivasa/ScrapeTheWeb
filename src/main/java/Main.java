@@ -65,6 +65,7 @@ public class Main extends HttpServlet {
         word = word.replace(".", "");
         word = word.replace(":", "");
         word = word.replace("*", "");
+        word = word.replaceAll(" ","");
         word = word.replaceAll("[&].{2,6}[;]", "");
         word = word.toLowerCase();
         return word;
@@ -276,7 +277,7 @@ public class Main extends HttpServlet {
             term = removeSpecialCharacters(term);
 
             //If its only numbers then ignore it
-            if (!term.matches("-?\\d+(\\.\\d+)?") && !term.equals(" ")) {
+            if (!term.matches("-?\\d+(\\.\\d+)?")) {
                 if (fistTotalTerms < num) {
                     topTerms[fistTotalTerms] = term;
                     topTermCount[fistTotalTerms] = count;
