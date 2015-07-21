@@ -277,7 +277,7 @@ public class Main extends HttpServlet {
             term = removeSpecialCharacters(term);
 
             //If its only numbers then ignore it
-            if (!term.matches("-?\\d+(\\.\\d+)?")) {
+            if (!term.matches("-?\\d+(\\.\\d+)?") && !term.matches(" ")) {
                 if (fistTotalTerms < num) {
                     topTerms[fistTotalTerms] = term;
                     topTermCount[fistTotalTerms] = count;
