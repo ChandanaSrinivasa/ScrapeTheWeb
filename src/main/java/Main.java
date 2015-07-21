@@ -77,17 +77,18 @@ public class Main extends HttpServlet {
 
         if (url != null) {
 
-            //Get the HTML Body
+
             Connection con = Jsoup.connect(url);
             con.userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:38.0) Gecko/20100101 Firefox/38.0");
             Document doc = con.get();
 
 
-            if (url.lastIndexOf("/") < 7)  // If the URL is like http://twitter.com or http://wikipedia.com then return just THE TITLE
+            if (url.lastIndexOf('/') < 7)  // If the URL is like http://twitter.com or http://wikipedia.com then return just THE TITLE
             {
                 String title = doc.title();
                 finalQuery=title+",";
             }
+            //Get the HTML Body
             else
             {
                 Element body = doc.body();
