@@ -86,7 +86,7 @@ public class Main extends HttpServlet {
             if (url.lastIndexOf('/') <= 7)  // If the URL is like http://twitter.com or http://wikipedia.com then return just THE TITLE
             {
                 String title = doc.title();
-                finalQuery=title+",";
+                finalQuery=title+"~";
             }
             //Get the HTML Body
             else
@@ -226,7 +226,7 @@ public class Main extends HttpServlet {
                     finalQuery += finalKeywords[j];
 
                     if (j + 1 != NUM_KEYWORDS) {
-                        finalQuery += ",";
+                        finalQuery += "~";
                     }
                 }
             }
