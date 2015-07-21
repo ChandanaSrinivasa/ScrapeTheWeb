@@ -83,7 +83,7 @@ public class Main extends HttpServlet {
             Document doc = con.get();
 
 
-            if (url.lastIndexOf("/", 7) > 7)  // If the URL is like http://twitter.com or http://wikipedia.com then return just THE TITLE
+            if (url.lastIndexOf("/") < 7)  // If the URL is like http://twitter.com or http://wikipedia.com then return just THE TITLE
             {
                 String title = doc.title();
                 finalQuery=title+",";
