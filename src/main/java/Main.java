@@ -34,7 +34,7 @@ public class Main extends HttpServlet {
 
     public static String frequentWords[] =
                 {
-                        " need ", " fired ", " add ", " after ", " saw ", " chief ", " awesome ", " pay ", " grows ",
+                        " need ", " fired ", " add ", " after ", " saw ", " chief ", " awesome ", " pay ", " grows "," i ",
                         " consider ", " | ", " from ", " every ", " you ", " people ", " updates ", " i ",
                         " get ", " fascinating ", " friends ", " your ", " connect ", " login ", " other ", " others ",
                         " sure ", " and ", " at ", " be ", " but ", " by ", " if ", " into ", " it ", " no ", " not ", " of ",
@@ -92,7 +92,7 @@ public class Main extends HttpServlet {
             if (url.lastIndexOf('/') <= 7)  // If the URL is simple like http://twitter.com or http://wikipedia.com then return just THE TITLE of the document
             {
                 String title = doc.title();
-                finalQuery=title+"~";
+                finalQuery=title+"+";
             }
             //Get the HTML Body
             else
@@ -232,7 +232,7 @@ public class Main extends HttpServlet {
                     finalQuery += finalKeywords[j];
 
                     if (j + 1 != NUM_KEYWORDS) {
-                        finalQuery += "~";
+                        finalQuery += "+";
                     }
                 }
             }
