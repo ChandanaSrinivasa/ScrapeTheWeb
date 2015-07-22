@@ -79,12 +79,17 @@ public class Main extends HttpServlet {
 
 
             Connection con = Jsoup.connect(url);
-            //con.userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:38.0) Gecko/20100101 Firefox/38.0");
-            con.userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US;   rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6"); //for Desktop site
+            con.userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:38.0) Gecko/20100101 Firefox/38.0");
             Document doc = con.get();
-            logger.info("~~~~~~~~~~~~~~base URI~~~~~~~~~~~~~~~~~~" + doc.baseUri());
 
-            if (url.lastIndexOf('/') <= 7)  // If the URL is like http://twitter.com or http://wikipedia.com then return just THE TITLE
+
+            if(url.endsWith("/"))
+            {
+                url = url.substring(0,url.length()-1); // IF THE URL IS http://twitter.com/ THEN REMOVE THE LAST / AND MAKE IT http://twitter.com
+                logger.info("~~~~~~~~~~~~~~base URI~~~~~~~~~~~~~~~~~~" +url);
+            }
+
+            if (url.lastIndexOf('/') <= 7)  // If the URL is simple like http://twitter.com or http://wikipedia.com then return just THE TITLE of the document
             {
                 String title = doc.title();
                 finalQuery=title+"~";
