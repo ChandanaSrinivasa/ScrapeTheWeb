@@ -92,7 +92,7 @@ public class Main extends HttpServlet {
             if (url.lastIndexOf('/') <= 7)  // If the URL is simple like http://twitter.com or http://wikipedia.com then return just THE TITLE of the document
             {
                 String title = doc.title();
-                finalQuery=title+"+";
+                finalQuery=title;
             }
             //Get the HTML Body
             else
