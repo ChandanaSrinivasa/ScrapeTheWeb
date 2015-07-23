@@ -32,6 +32,8 @@ import com.sree.textbytes.jtopia.TermsExtractor;
 
 public class Main extends HttpServlet {
 
+    public String finalQuery = "";
+
     public static String frequentWords[] =
                 {
                         " need ", " fired ", " add ", " after ", " saw ", " chief ", " awesome ", " pay ", " grows "," i ",
@@ -72,7 +74,6 @@ public class Main extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String finalQuery = "";
         String url = request.getParameter("url");
 
         if (url != null) {
@@ -83,15 +84,21 @@ public class Main extends HttpServlet {
             Document doc = con.get();
 
 
-            if(url.endsWith("/"))
+            if(url.endsWith("/"))  // IF THE URL IS http://twitter.com/ THEN REMOVE THE LAST / AND MAKE IT http://twitter.com
             {
-                url = url.substring(0,url.length()-1); // IF THE URL IS http://twitter.com/ THEN REMOVE THE LAST / AND MAKE IT http://twitter.com
-                logger.info("~~~~~~~~~~~~~~base URI~~~~~~~~~~~~~~~~~~" +url);
+                url = url.substring(0,url.length()-1);
+            }
+
+            if(url.contains("yelp"))
+            {
+                yelpSiteKeyWords(url,doc);
+                return;
             }
 
             if (url.lastIndexOf('/') <= 7)  // If the URL is simple like http://twitter.com or http://wikipedia.com then return just THE TITLE of the document
             {
                 String title = doc.title();
+                title.replaceAll("[&].{2,6}[;]", " ");
                 finalQuery=title;
             }
             //Get the HTML Body
@@ -318,6 +325,56 @@ public class Main extends HttpServlet {
         return topWords;
     }
 
+    private String yelpSiteKeyWords(String url,Document doc)
+    {
+        String yelpRegex = "http(s)?://(www)?(m)?(.)?yelp.com/.*";
+        if(yelpRegex.matches(url))
+        {
+            if((url.indexOf("com/")+3)==url.lastIndexOf('/') && url.indexOf('?')==-1)
+            {
+                String kw = url.substring(url.lastIndexOf('/')+1,url.length());
+                finalQuery="search for restaurants in "+kw.replaceAll("-", " ");
+            }
+            else if(url.indexOf("cflt")>-1)
+            {
+                String kw = url.substring(url.indexOf("cflt")+5,url.indexOf('&'));
+                finalQuery="search for business category "+kw;
+            }
+            else if(url.indexOf("biz")>-1)
+            {
+                String title = doc.title();
+                String category = doc.select("span[itemprop=title]").text();
+                String streetAddress = doc.select("span[itemprop=streetAddress]").text();
+                String addressLocality = doc.select("span[itemprop=addressLocality]").text();
+                String addressRegion = doc.select("span[itemprop=addressRegion]").text();
+                String postalCode = doc.select("span[itemprop=postalCode]").text();
+
+                finalQuery = "search for "+title.substring(0,title.indexOf('-')-1)+" in "+category+" category located on "+streetAddress+", "+addressLocality+", "+addressRegion+", "+postalCode;
+            }
+            else if(url.indexOf("menu")>-1)
+            {
+                if(url.indexOf("item")>-1)
+                {
+                    String recipes = url.substring(url.lastIndexOf('/')+1,url.length());
+                    finalQuery = "recipe "+recipes.replace("-"," ");
+                }
+                else
+                {
+                    String recipes = doc.select("a[class=h-link]").text();
+                    finalQuery = "recipe "+recipes.trim();
+                }
+
+            }
+            else if(url.indexOf("find_desc")>-1 && url.indexOf("find_loc")>-1)
+            {
+                String findDesc = doc.select("span[class=find-desc]").text();
+                String findLoc = doc.select("span[class=find-loc]").text();
+                finalQuery = "local businesses search for "+findDesc.trim()+" near "+findLoc.trim();
+            }
+
+        }
+        return null;
+    }
 
 //    private static void startNLP() throws IOException {   -- for chinese words
 //        File file = new File(".");
