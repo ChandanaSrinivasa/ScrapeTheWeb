@@ -362,8 +362,11 @@ public class Main extends HttpServlet {
                 else
                 {
                     Elements a = doc.select("a.h-link");
-                    String recipes = a.first().text();
-                    finalQuery = "recipes for " + recipes.trim();
+                    Element firstRecipe = a.first();
+                    if(firstRecipe != null) {
+                        String recipes = firstRecipe.text();
+                        finalQuery = "recipes for " + recipes.trim();
+                    }
 
                 }
 
