@@ -327,14 +327,18 @@ public class Main extends HttpServlet {
 
     private void yelpSiteKeyWords(String url,Document doc)
     {
-            if((url.indexOf("com/")+3)==url.lastIndexOf('/') && url.indexOf('?')==-1)
+            if(url.endsWith(".com"))
             {
-                String kw = url.substring(url.lastIndexOf('/')+1,url.length());
+                finalQuery="yelp";
+            }
+            else if((url.indexOf("com/")+3)==url.lastIndexOf('/') && url.indexOf('?')==-1)
+            {
+                String kw = url.substring(url.lastIndexOf('/') + 1, url.length());
                 finalQuery="search for restaurants in "+kw.replaceAll("-", " ");
             }
             else if(url.indexOf("cflt")>-1)
             {
-                String kw = url.substring(url.indexOf("cflt")+5,url.indexOf('&'));
+                String kw = url.substring(url.indexOf("cflt") + 5, url.indexOf('&'));
                 finalQuery="search for business category "+kw;
             }
             else if(url.indexOf("biz")>-1)
