@@ -361,7 +361,8 @@ public class Main extends HttpServlet {
                 }
                 else
                 {
-                    Elements a = doc.select("a.h-link");
+                    Elements body = doc.select("body");
+                    Elements a = body.select("a.h-link");
                     Element firstRecipe = a.first();
                     if(firstRecipe != null) {
                         String recipes = firstRecipe.text();
