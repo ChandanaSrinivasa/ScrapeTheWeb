@@ -93,6 +93,11 @@ public class Main extends HttpServlet {
                 finalQuery = yelpSiteKeyWords(url,doc);
             }
 
+            else if(url.contains("imdb.com"))
+            {
+                finalQuery = doc.select("meta[property=og:title]").attr("content");
+            }
+
             else {
                 if (url.lastIndexOf('/') <= 7)  // If the URL is simple like http://twitter.com or http://wikipedia.com then return just THE TITLE of the document
                 {
@@ -357,18 +362,11 @@ public class Main extends HttpServlet {
                 if(url.indexOf("item")>-1)
                 {
                     String recipes = url.substring(url.lastIndexOf('/')+1,url.length());
-                    query = "recipes for "+recipes.replace("-"," ");
+                    query = "recipes of "+recipes.replace("-"," ");
                 }
                 else
                 {
-                    Elements body = doc.select("body");
-                    Elements a = body.select("a.h-link");
-                    Element firstRecipe = a.first();
-                    if(firstRecipe != null) {
-                        String recipes = firstRecipe.text();
-                        query = "recipes for " + recipes.trim();
-                    }
-
+                    query = doc.title().replaceFirst("-","Restaurant").replaceFirst("-","in");
                 }
 
             }
@@ -381,6 +379,7 @@ public class Main extends HttpServlet {
 
         return query;
     }
+
 
 //    private static void startNLP() throws IOException {   -- for chinese words
 //        File file = new File(".");
