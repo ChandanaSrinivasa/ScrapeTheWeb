@@ -32,8 +32,6 @@ import com.sree.textbytes.jtopia.TermsExtractor;
 
 public class Main extends HttpServlet {
 
-    public String finalQuery = "";
-
     public static String frequentWords[] =
                 {
                         " need ", " fired ", " add ", " after ", " saw ", " chief ", " awesome ", " pay ", " grows "," i ",
@@ -74,6 +72,7 @@ public class Main extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String finalQuery = "";
         String url = request.getParameter("url");
 
         if (url != null) {
@@ -91,7 +90,7 @@ public class Main extends HttpServlet {
 
             if(url.contains("yelp.com"))
             {
-                yelpSiteKeyWords(url,doc);
+                finalQuery = yelpSiteKeyWords(url,doc);
             }
 
             else {
@@ -325,21 +324,22 @@ public class Main extends HttpServlet {
         return topWords;
     }
 
-    private void yelpSiteKeyWords(String url,Document doc)
+    private String yelpSiteKeyWords(String url,Document doc)
     {
+        String query="";
             if(url.endsWith(".com"))
             {
-                finalQuery="yelp";
+                query="yelp";
             }
             else if((url.indexOf("com/")+3)==url.lastIndexOf('/') && url.indexOf('?')==-1)
             {
                 String kw = url.substring(url.lastIndexOf('/') + 1, url.length());
-                finalQuery="searching for restaurants in "+kw.replaceAll("-", " ");
+                query="searching for restaurants in "+kw.replaceAll("-", " ");
             }
             else if(url.indexOf("cflt")>-1)
             {
                 String kw = url.substring(url.indexOf("cflt") + 5, url.indexOf('&'));
-                finalQuery="search for business category "+kw;
+                query="search for business category "+kw;
             }
             else if(url.indexOf("biz")>-1)
             {
@@ -350,14 +350,14 @@ public class Main extends HttpServlet {
                 String addressRegion = doc.select("span[itemprop=addressRegion]").text();
                 String postalCode = doc.select("span[itemprop=postalCode]").text();
 
-                finalQuery = "searching for "+title.substring(0,title.indexOf('-')-1)+" in "+category+" category located on "+streetAddress+", "+addressLocality+", "+addressRegion+", "+postalCode;
+                query = "searching for "+title.substring(0,title.indexOf('-')-1)+" in "+category+" category located on "+streetAddress+", "+addressLocality+", "+addressRegion+", "+postalCode;
             }
             else if(url.indexOf("menu")>-1)
             {
                 if(url.indexOf("item")>-1)
                 {
                     String recipes = url.substring(url.lastIndexOf('/')+1,url.length());
-                    finalQuery = "recipes for "+recipes.replace("-"," ");
+                    query = "recipes for "+recipes.replace("-"," ");
                 }
                 else
                 {
@@ -366,7 +366,7 @@ public class Main extends HttpServlet {
                     Element firstRecipe = a.first();
                     if(firstRecipe != null) {
                         String recipes = firstRecipe.text();
-                        finalQuery = "recipes for " + recipes.trim();
+                        query = "recipes for " + recipes.trim();
                     }
 
                 }
@@ -376,10 +376,10 @@ public class Main extends HttpServlet {
             {
                 String findDesc = doc.select("span[class=find-desc]").text();
                 String findLoc = doc.select("span[class=find-loc]").text();
-                finalQuery = "searching for "+findDesc.trim()+" near "+findLoc.trim();
+                query = "searching for "+findDesc.trim()+" near "+findLoc.trim();
             }
 
-
+        return query;
     }
 
 //    private static void startNLP() throws IOException {   -- for chinese words
