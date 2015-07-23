@@ -92,154 +92,154 @@ public class Main extends HttpServlet {
             if(url.contains("yelp"))
             {
                 yelpSiteKeyWords(url,doc);
-                return;
             }
 
-            if (url.lastIndexOf('/') <= 7)  // If the URL is simple like http://twitter.com or http://wikipedia.com then return just THE TITLE of the document
-            {
-                String title = doc.title();
-                title.replaceAll("[&].{2,6}[;]", " ");
-                finalQuery=title;
-            }
-            //Get the HTML Body
-            else
-            {
-                Element body = doc.body();
-                String txtBody = body.text().toLowerCase();
-                logger.info("====original body=====" + txtBody);
-
-                //Remove the frequest words from the body
-                for (String delWords : frequentWords) {
-                    txtBody = txtBody.replace(delWords, " ");
+            else {
+                if (url.lastIndexOf('/') <= 7)  // If the URL is simple like http://twitter.com or http://wikipedia.com then return just THE TITLE of the document
+                {
+                    String title = doc.title();
+                    title.replaceAll("[&].{2,6}[;]", " ");
+                    finalQuery = title;
                 }
+                //Get the HTML Body
+                else {
+                    Element body = doc.body();
+                    String txtBody = body.text().toLowerCase();
+                    logger.info("====original body=====" + txtBody);
 
-                txtBody = txtBody.replaceAll("[&].{2,6}[;]", " ");
-                txtBody = txtBody.replaceAll("\\p{P}", " ");
-
-                // token words ----- FOR Chinese Words
-                //            List<String> tokenWords = segmenter.segmentString(txtBody);
-                //
-                //            //Remove the frequest words from the body
-                //            StringBuilder newBody = new StringBuilder();
-                //
-                //            for (String word : tokenWords) {
-                //                if (!stopWords.contains(word)) {
-                //                    newBody.append(word);
-                //                    newBody.append(" ");
-                //                }
-                //            }
-                //          txtBody = newBody.toString();
-
-                logger.info("====without stopwords=====" + txtBody);
-
-                //Get top 5 used keywords
-                String[] topUsedWords = returnNumKeywords(txtBody, 5);
-                HashMap<String, Integer> keywordList = new HashMap<String, Integer>();
-
-                for (String txt : topUsedWords) {
-                    logger.info("=====top Used Words=====" + txt);
-                    keywordList.put(txt, 1);
-                }
-
-                //HTML Doc title
-                String title = doc.title();
-
-                //Meta - Description of the page
-                Elements metaLinksForDescription = doc.select("meta[name=description]");
-                List<String> metaDescriptionList = new ArrayList<String>();
-
-                String metaTagDescriptionContent;
-
-                if (!metaLinksForDescription.isEmpty()) {
-                    metaTagDescriptionContent = metaLinksForDescription.first().attr("content");
-                    metaDescriptionList = Arrays.asList(metaTagDescriptionContent.split(" "));
-                }
-
-                //Meta - Keyword of the page
-                Elements metaLinksForKeywords = doc.select("meta[name=keywords]");
-                List<String> metaKeywordsList = new ArrayList<String>();
-
-                String metaTagKeywordscontent;
-
-                if (!metaLinksForKeywords.isEmpty()) {
-                    metaTagKeywordscontent = metaLinksForKeywords.first().attr("content");
-                    metaKeywordsList = Arrays.asList(metaTagKeywordscontent.split(","));
-                }
-
-                //Figure out the top most keyword now
-                for (Object o : keywordList.entrySet()) {
-                    Map.Entry pair = (Map.Entry) o;
-
-                    String term = ((String) pair.getKey()).toLowerCase();
-                    int count = (Integer) pair.getValue();
-
-                    if (url.toLowerCase().contains(term)) {
-                        count += 10;
-                        logger.info("========" + term + " in URL");
+                    //Remove the frequest words from the body
+                    for (String delWords : frequentWords) {
+                        txtBody = txtBody.replace(delWords, " ");
                     }
 
-                    if (title.toLowerCase().contains(term)) {
-                        count += 10;
-                        logger.info("========" + term + " in Title");
+                    txtBody = txtBody.replaceAll("[&].{2,6}[;]", " ");
+                    txtBody = txtBody.replaceAll("\\p{P}", " ");
+
+                    // token words ----- FOR Chinese Words
+                    //            List<String> tokenWords = segmenter.segmentString(txtBody);
+                    //
+                    //            //Remove the frequest words from the body
+                    //            StringBuilder newBody = new StringBuilder();
+                    //
+                    //            for (String word : tokenWords) {
+                    //                if (!stopWords.contains(word)) {
+                    //                    newBody.append(word);
+                    //                    newBody.append(" ");
+                    //                }
+                    //            }
+                    //          txtBody = newBody.toString();
+
+                    logger.info("====without stopwords=====" + txtBody);
+
+                    //Get top 5 used keywords
+                    String[] topUsedWords = returnNumKeywords(txtBody, 5);
+                    HashMap<String, Integer> keywordList = new HashMap<String, Integer>();
+
+                    for (String txt : topUsedWords) {
+                        logger.info("=====top Used Words=====" + txt);
+                        keywordList.put(txt, 1);
                     }
 
-                    for (String metaDescription : metaDescriptionList) {
-                        if (metaDescription.toLowerCase().contains(term)) {
-                            count += 5;
-                            logger.info("========" + term + " in Meta Desc");
-                            break;
+                    //HTML Doc title
+                    String title = doc.title();
+
+                    //Meta - Description of the page
+                    Elements metaLinksForDescription = doc.select("meta[name=description]");
+                    List<String> metaDescriptionList = new ArrayList<String>();
+
+                    String metaTagDescriptionContent;
+
+                    if (!metaLinksForDescription.isEmpty()) {
+                        metaTagDescriptionContent = metaLinksForDescription.first().attr("content");
+                        metaDescriptionList = Arrays.asList(metaTagDescriptionContent.split(" "));
+                    }
+
+                    //Meta - Keyword of the page
+                    Elements metaLinksForKeywords = doc.select("meta[name=keywords]");
+                    List<String> metaKeywordsList = new ArrayList<String>();
+
+                    String metaTagKeywordscontent;
+
+                    if (!metaLinksForKeywords.isEmpty()) {
+                        metaTagKeywordscontent = metaLinksForKeywords.first().attr("content");
+                        metaKeywordsList = Arrays.asList(metaTagKeywordscontent.split(","));
+                    }
+
+                    //Figure out the top most keyword now
+                    for (Object o : keywordList.entrySet()) {
+                        Map.Entry pair = (Map.Entry) o;
+
+                        String term = ((String) pair.getKey()).toLowerCase();
+                        int count = (Integer) pair.getValue();
+
+                        if (url.toLowerCase().contains(term)) {
+                            count += 10;
+                            logger.info("========" + term + " in URL");
                         }
-                    }
 
-                    for (String metaKeyword : metaKeywordsList) {
-                        if (metaKeyword.toLowerCase().contains(term)) {
-                            count += 5;
-                            logger.info("========" + term + " in Meta Key");
-                            break;
+                        if (title.toLowerCase().contains(term)) {
+                            count += 10;
+                            logger.info("========" + term + " in Title");
                         }
-                    }
 
-                    keywordList.put(term, count);       //Give score 5 to title
-
-                    logger.info("==========Final Value:" + term + ":" + count);
-                }
-
-                int NUM_KEYWORDS = 3;
-                int i = 0;
-
-                String[] finalKeywords = new String[NUM_KEYWORDS];
-                int[] finalKeywordsScore = new int[NUM_KEYWORDS];
-
-                Iterator sortIT = keywordList.entrySet().iterator();
-
-                logger.info("========Sorted List Count:" + keywordList.size());
-
-                while (sortIT.hasNext()) {
-                    Map.Entry pair = (Map.Entry) sortIT.next();
-
-                    String term = (String) pair.getKey();
-                    int score = (Integer) pair.getValue();
-
-                    if (i < NUM_KEYWORDS) {
-                        finalKeywords[i] = term;
-                        finalKeywordsScore[i] = score;
-                    } else {
-                        for (int j = 0; j < NUM_KEYWORDS; j++) {
-                            if (finalKeywordsScore[j] < score) {
-                                finalKeywords[j] = term;
-                                finalKeywordsScore[j] = score;
+                        for (String metaDescription : metaDescriptionList) {
+                            if (metaDescription.toLowerCase().contains(term)) {
+                                count += 5;
+                                logger.info("========" + term + " in Meta Desc");
                                 break;
                             }
                         }
+
+                        for (String metaKeyword : metaKeywordsList) {
+                            if (metaKeyword.toLowerCase().contains(term)) {
+                                count += 5;
+                                logger.info("========" + term + " in Meta Key");
+                                break;
+                            }
+                        }
+
+                        keywordList.put(term, count);       //Give score 5 to title
+
+                        logger.info("==========Final Value:" + term + ":" + count);
                     }
-                    i++;
-                }
 
-                for (int j = 0; j < NUM_KEYWORDS; j++) {
-                    finalQuery += finalKeywords[j];
+                    int NUM_KEYWORDS = 3;
+                    int i = 0;
 
-                    if (j + 1 != NUM_KEYWORDS) {
-                        finalQuery += "+";
+                    String[] finalKeywords = new String[NUM_KEYWORDS];
+                    int[] finalKeywordsScore = new int[NUM_KEYWORDS];
+
+                    Iterator sortIT = keywordList.entrySet().iterator();
+
+                    logger.info("========Sorted List Count:" + keywordList.size());
+
+                    while (sortIT.hasNext()) {
+                        Map.Entry pair = (Map.Entry) sortIT.next();
+
+                        String term = (String) pair.getKey();
+                        int score = (Integer) pair.getValue();
+
+                        if (i < NUM_KEYWORDS) {
+                            finalKeywords[i] = term;
+                            finalKeywordsScore[i] = score;
+                        } else {
+                            for (int j = 0; j < NUM_KEYWORDS; j++) {
+                                if (finalKeywordsScore[j] < score) {
+                                    finalKeywords[j] = term;
+                                    finalKeywordsScore[j] = score;
+                                    break;
+                                }
+                            }
+                        }
+                        i++;
+                    }
+
+                    for (int j = 0; j < NUM_KEYWORDS; j++) {
+                        finalQuery += finalKeywords[j];
+
+                        if (j + 1 != NUM_KEYWORDS) {
+                            finalQuery += "+";
+                        }
                     }
                 }
             }
@@ -325,7 +325,7 @@ public class Main extends HttpServlet {
         return topWords;
     }
 
-    private String yelpSiteKeyWords(String url,Document doc)
+    private void yelpSiteKeyWords(String url,Document doc)
     {
         String yelpRegex = "http(s)?://(www)?(m)?(.)?yelp.com/.*";
         if(yelpRegex.matches(url))
@@ -373,7 +373,7 @@ public class Main extends HttpServlet {
             }
 
         }
-        return null;
+
     }
 
 //    private static void startNLP() throws IOException {   -- for chinese words
