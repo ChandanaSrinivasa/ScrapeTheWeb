@@ -361,11 +361,10 @@ public class Main extends HttpServlet {
                 }
                 else
                 {
-                    Elements a = doc.select("a");
-                    if(a.hasClass("h-link")) {
-                        String recipes = a.text();
-                        finalQuery = "recipes for " + recipes.trim();
-                    }
+                    Elements a = doc.select("a.h-link");
+                    String recipes = a.first().text();
+                    finalQuery = "recipes for " + recipes.trim();
+
                 }
 
             }
