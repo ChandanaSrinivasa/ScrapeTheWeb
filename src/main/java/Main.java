@@ -89,7 +89,7 @@ public class Main extends HttpServlet {
                 url = url.substring(0,url.length()-1);
             }
 
-            if(url.contains("yelp"))
+            if(url.contains("yelp.com"))
             {
                 yelpSiteKeyWords(url,doc);
             }
@@ -361,8 +361,11 @@ public class Main extends HttpServlet {
                 }
                 else
                 {
-                    String recipes = doc.select("a[class=h-link]").html();
-                    finalQuery = "recipes for "+recipes.trim();
+                    Elements a = doc.select("a");
+                    if(a.hasClass("h-link")) {
+                        String recipes = a.text();
+                        finalQuery = "recipes for " + recipes.trim();
+                    }
                 }
 
             }
