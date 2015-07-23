@@ -95,7 +95,10 @@ public class Main extends HttpServlet {
 
             else if(url.contains("imdb.com"))
             {
-                finalQuery = doc.select("meta[property=og:title]").attr("content");
+                if(doc.select("meta[property=og:title]").attr("content")!="")
+                    finalQuery = doc.select("meta[property=og:title]").attr("content");
+                else
+                    finalQuery = doc.title().trim();
             }
 
             else {
