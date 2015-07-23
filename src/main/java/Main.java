@@ -327,9 +327,6 @@ public class Main extends HttpServlet {
 
     private void yelpSiteKeyWords(String url,Document doc)
     {
-        String yelpRegex = "http(s)?://(www)?(m)?(.)?yelp.com/.*";
-        if(yelpRegex.matches(url))
-        {
             if((url.indexOf("com/")+3)==url.lastIndexOf('/') && url.indexOf('?')==-1)
             {
                 String kw = url.substring(url.lastIndexOf('/')+1,url.length());
@@ -372,7 +369,6 @@ public class Main extends HttpServlet {
                 finalQuery = "local businesses search for "+findDesc.trim()+" near "+findLoc.trim();
             }
 
-        }
 
     }
 
