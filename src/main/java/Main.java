@@ -90,17 +90,16 @@ public class Main extends HttpServlet {
             if (url.contains("yelp.com")) {
                 finalQuery = yelpSiteKeyWords(url, doc);
             } else if (url.contains("cnn.com") || url.contains("wikipedia.org")) {
-
-                String pageTitle = doc.title();
-                if (pageTitle.indexOf('-') > -1) {
-                    finalQuery = pageTitle.substring(0, pageTitle.indexOf('-')).trim();
-                } else {
-                    finalQuery = pageTitle;
-                }
+                finalQuery = titleExtractor(url, doc);
 
             } else if (url.contains("imdb.com")) {
-                if (doc.select("meta[property=og:title]").attr("content") != "") finalQuery = doc.select("meta[property=og:title]").attr("content");
-                else finalQuery = doc.title().trim();
+                if (doc.select("meta[property=og:title]").attr("content") != "") {
+                    finalQuery = doc.select("meta[property=og:title]").attr("content");
+                } else {
+                    finalQuery = doc.title().trim();
+                }
+            } else if (url.contains("amazon.com")) {
+                finalQuery = titleExtractor(url, doc);
             } else {
                 if (url.lastIndexOf('/') <= 7) // If the URL is simple like http://twitter.com or http://wikipedia.com then return just THE TITLE of the document
                 {
@@ -279,7 +278,7 @@ public class Main extends HttpServlet {
     }
 
     private String[] returnNumKeywords(String body, int num) {
-        DefaultTagger tagger = new DefaultTagger();
+        OpenNLPTagger tagger = new OpenNLPTagger();
 
         //for default lexicon POS tags
         Configuration.setTaggerType(tagger.TAGGER_TYPE);
@@ -365,6 +364,24 @@ public class Main extends HttpServlet {
             query = "searching for " + findDesc.trim() + " near " + findLoc.trim();
         }
 
+        return query;
+    }
+
+    private String titleExtractor(String url, Document doc) {
+        String pageTitle = doc.title();
+        String query = "";
+        if (url.contains("amazon.com")) {
+            if (pageTitle.indexOf(':') > -1) {
+                query = pageTitle.substring(pageTitle.indexOf(':') + 1, pageTitle.length()).trim();
+            }
+        } else {
+            if (pageTitle.indexOf('-') > -1) {
+                query = pageTitle.substring(0, pageTitle.indexOf('-')).trim();
+            }
+        }
+        if (query == "") {
+            query = doc.title().trim();
+        }
         return query;
     }
 
