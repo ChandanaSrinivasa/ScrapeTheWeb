@@ -32,32 +32,32 @@ import com.sree.textbytes.jtopia.TermsExtractor;
 
 public class Main extends HttpServlet {
 
-    public static String frequentWords[] =
-                {
-                        " need ", " fired ", " add ", " after ", " saw ", " chief ", " awesome ", " pay ", " grows "," i ",
-                        " consider ", " | ", " from ", " every ", " you ", " people ", " updates ", " i ",
-                        " get ", " fascinating ", " friends ", " your ", " connect ", " login ", " other ", " others ",
-                        " sure ", " and ", " at ", " be ", " but ", " by ", " if ", " into ", " it ", " no ", " not ", " of ",
-                        " or ", " such ", " an ", " the ", " a ", " their ", " then ", " there ", " these ", " this ", " to ",
-                        " was ", " will ", " with ", " so ", " also ", " that ", " they ", " therefore ", " for ", " much ",
-                        " more ", " hence ", " is ", " are ", " why ", " what ", " how ", " as ", " on ", " in ", " like ", " am ", " pm "};
+    public static String frequentWords[] = {
+            " need ", " fired ", " add ", " after ", " saw ", " chief ", " awesome ", " pay ", " grows ", " i ",
+            " consider ", " | ", " from ", " every ", " you ", " people ", " updates ", " i ",
+            " get ", " fascinating ", " friends ", " your ", " connect ", " login ", " other ", " others ",
+            " sure ", " and ", " at ", " be ", " but ", " by ", " if ", " into ", " it ", " no ", " not ", " of ",
+            " or ", " such ", " an ", " the ", " a ", " their ", " then ", " there ", " these ", " this ", " to ",
+            " was ", " will ", " with ", " so ", " also ", " that ", " they ", " therefore ", " for ", " much ",
+            " more ", " hence ", " is ", " are ", " why ", " what ", " how ", " as ", " on ", " in ", " like ", " am ", " pm "
+    };
 
     private static Logger logger = Logger.getLogger("GetURLServlet");
 
-//    public static Set<String> stopWords = new HashSet<String>();
-//    private static CRFClassifier<CoreLabel> segmenter;
+    //    public static Set<String> stopWords = new HashSet<String>();
+    //    private static CRFClassifier<CoreLabel> segmenter;
 
-//    // load stop words to stopWords --- For Chinese
-//    private static Set<String> loadStopWords() {
-//        try {
-//            logger.info("loading StopWords...");
-//            File file = new File(".");
-//            return new HashSet<String>(Files.readAllLines(Paths.get(file.getCanonicalPath(), "stopwords.txt"), StandardCharsets.UTF_8));
-//        } catch (IOException e) {
-//            System.err.println("error when load stop words");
-//        }
-//        return null;
-//    }
+    //    // load stop words to stopWords --- For Chinese
+    //    private static Set<String> loadStopWords() {
+    //        try {
+    //            logger.info("loading StopWords...");
+    //            File file = new File(".");
+    //            return new HashSet<String>(Files.readAllLines(Paths.get(file.getCanonicalPath(), "stopwords.txt"), StandardCharsets.UTF_8));
+    //        } catch (IOException e) {
+    //            System.err.println("error when load stop words");
+    //        }
+    //        return null;
+    //    }
 
     // replace punctuations with spaces
     private String removeSpecialCharacters(String word) {
@@ -65,7 +65,7 @@ public class Main extends HttpServlet {
         word = word.replace(".", "");
         word = word.replace(":", "");
         word = word.replace("*", "");
-        word = word.replaceAll(" ","");
+        word = word.replaceAll(" ", "");
         word = word.replaceAll("[&].{2,6}[;]", "");
         word = word.toLowerCase();
         return word;
@@ -77,32 +77,32 @@ public class Main extends HttpServlet {
 
         if (url != null) {
 
-
             Connection con = Jsoup.connect(url);
             con.userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:38.0) Gecko/20100101 Firefox/38.0");
             Document doc = con.get();
 
 
-            if(url.endsWith("/"))  // IF THE URL IS http://twitter.com/ THEN REMOVE THE LAST / AND MAKE IT http://twitter.com
+            if (url.endsWith("/")) // IF THE URL IS http://twitter.com/ THEN REMOVE THE LAST / AND MAKE IT http://twitter.com
             {
-                url = url.substring(0,url.length()-1);
+                url = url.substring(0, url.length() - 1);
             }
 
-            if(url.contains("yelp.com"))
-            {
-                finalQuery = yelpSiteKeyWords(url,doc);
-            }
+            if (url.contains("yelp.com")) {
+                finalQuery = yelpSiteKeyWords(url, doc);
+            } else if (url.contains("cnn.com") || url.contains("wikipedia.org")) {
 
-            else if(url.contains("imdb.com"))
-            {
-                if(doc.select("meta[property=og:title]").attr("content")!="")
-                    finalQuery = doc.select("meta[property=og:title]").attr("content");
-                else
-                    finalQuery = doc.title().trim();
-            }
+                String pageTitle = doc.title();
+                if (pageTitle.indexOf('-') > -1) {
+                    finalQuery = pageTitle.substring(0, pageTitle.indexOf('-')).trim();
+                } else {
+                    finalQuery = pageTitle;
+                }
 
-            else {
-                if (url.lastIndexOf('/') <= 7)  // If the URL is simple like http://twitter.com or http://wikipedia.com then return just THE TITLE of the document
+            } else if (url.contains("imdb.com")) {
+                if (doc.select("meta[property=og:title]").attr("content") != "") finalQuery = doc.select("meta[property=og:title]").attr("content");
+                else finalQuery = doc.title().trim();
+            } else {
+                if (url.lastIndexOf('/') <= 7) // If the URL is simple like http://twitter.com or http://wikipedia.com then return just THE TITLE of the document
                 {
                     String title = doc.title();
                     title.replaceAll("[&].{2,6}[;]", " ");
@@ -115,7 +115,7 @@ public class Main extends HttpServlet {
                     logger.info("====original body=====" + txtBody);
 
                     //Remove the frequest words from the body
-                    for (String delWords : frequentWords) {
+                    for (String delWords: frequentWords) {
                         txtBody = txtBody.replace(delWords, " ");
                     }
 
@@ -140,9 +140,9 @@ public class Main extends HttpServlet {
 
                     //Get top 5 used keywords
                     String[] topUsedWords = returnNumKeywords(txtBody, 5);
-                    HashMap<String, Integer> keywordList = new HashMap<String, Integer>();
+                    HashMap < String, Integer > keywordList = new HashMap < String, Integer > ();
 
-                    for (String txt : topUsedWords) {
+                    for (String txt: topUsedWords) {
                         logger.info("=====top Used Words=====" + txt);
                         keywordList.put(txt, 1);
                     }
@@ -152,7 +152,7 @@ public class Main extends HttpServlet {
 
                     //Meta - Description of the page
                     Elements metaLinksForDescription = doc.select("meta[name=description]");
-                    List<String> metaDescriptionList = new ArrayList<String>();
+                    List < String > metaDescriptionList = new ArrayList < String > ();
 
                     String metaTagDescriptionContent;
 
@@ -163,7 +163,7 @@ public class Main extends HttpServlet {
 
                     //Meta - Keyword of the page
                     Elements metaLinksForKeywords = doc.select("meta[name=keywords]");
-                    List<String> metaKeywordsList = new ArrayList<String>();
+                    List < String > metaKeywordsList = new ArrayList < String > ();
 
                     String metaTagKeywordscontent;
 
@@ -173,7 +173,7 @@ public class Main extends HttpServlet {
                     }
 
                     //Figure out the top most keyword now
-                    for (Object o : keywordList.entrySet()) {
+                    for (Object o: keywordList.entrySet()) {
                         Map.Entry pair = (Map.Entry) o;
 
                         String term = ((String) pair.getKey()).toLowerCase();
@@ -189,7 +189,7 @@ public class Main extends HttpServlet {
                             logger.info("========" + term + " in Title");
                         }
 
-                        for (String metaDescription : metaDescriptionList) {
+                        for (String metaDescription: metaDescriptionList) {
                             if (metaDescription.toLowerCase().contains(term)) {
                                 count += 5;
                                 logger.info("========" + term + " in Meta Desc");
@@ -197,7 +197,7 @@ public class Main extends HttpServlet {
                             }
                         }
 
-                        for (String metaKeyword : metaKeywordsList) {
+                        for (String metaKeyword: metaKeywordsList) {
                             if (metaKeyword.toLowerCase().contains(term)) {
                                 count += 5;
                                 logger.info("========" + term + " in Meta Key");
@@ -205,7 +205,7 @@ public class Main extends HttpServlet {
                             }
                         }
 
-                        keywordList.put(term, count);       //Give score 5 to title
+                        keywordList.put(term, count); //Give score 5 to title
 
                         logger.info("==========Final Value:" + term + ":" + count);
                     }
@@ -292,7 +292,7 @@ public class Main extends HttpServlet {
 
         topiaDoc = termExtractor.extractTerms(body);
 
-        Map<String, Integer> finalTerms = topiaDoc.getExtractedTerms();
+        Map < String, Integer > finalTerms = topiaDoc.getExtractedTerms();
         Iterator it = finalTerms.entrySet().iterator();
 
         String[] topTerms = new String[num];
@@ -332,81 +332,66 @@ public class Main extends HttpServlet {
         return topWords;
     }
 
-    private String yelpSiteKeyWords(String url,Document doc)
-    {
-        String query="";
-            if(url.endsWith(".com"))
-            {
-                query="yelp";
-            }
-            else if((url.indexOf("com/")+3)==url.lastIndexOf('/') && url.indexOf('?')==-1)
-            {
-                String kw = url.substring(url.lastIndexOf('/') + 1, url.length());
-                query="searching for restaurants in "+kw.replaceAll("-", " ");
-            }
-            else if(url.indexOf("cflt")>-1)
-            {
-                String kw = url.substring(url.indexOf("cflt") + 5, url.indexOf('&'));
-                query="search for business category "+kw;
-            }
-            else if(url.indexOf("biz")>-1)
-            {
-                String title = doc.title();
-                String category = doc.select("span[itemprop=title]").text();
-                String streetAddress = doc.select("span[itemprop=streetAddress]").text();
-                String addressLocality = doc.select("span[itemprop=addressLocality]").text();
-                String addressRegion = doc.select("span[itemprop=addressRegion]").text();
-                String postalCode = doc.select("span[itemprop=postalCode]").text();
+    private String yelpSiteKeyWords(String url, Document doc) {
+        String query = "";
+        if (url.endsWith(".com")) {
+            query = "yelp";
+        } else if ((url.indexOf("com/") + 3) == url.lastIndexOf('/') && url.indexOf('?') == -1) {
+            String kw = url.substring(url.lastIndexOf('/') + 1, url.length());
+            query = "searching for restaurants in " + kw.replaceAll("-", " ");
+        } else if (url.indexOf("cflt") > -1) {
+            String kw = url.substring(url.indexOf("cflt") + 5, url.indexOf('&'));
+            query = "search for business category " + kw;
+        } else if (url.indexOf("biz") > -1) {
+            String title = doc.title();
+            String category = doc.select("span[itemprop=title]").text();
+            String streetAddress = doc.select("span[itemprop=streetAddress]").text();
+            String addressLocality = doc.select("span[itemprop=addressLocality]").text();
+            String addressRegion = doc.select("span[itemprop=addressRegion]").text();
+            String postalCode = doc.select("span[itemprop=postalCode]").text();
 
-                query = "searching for "+title.substring(0,title.indexOf('-')-1)+" in "+category+" category located on "+streetAddress+", "+addressLocality+", "+addressRegion+", "+postalCode;
+            query = "searching for " + title.substring(0, title.indexOf('-') - 1) + " in " + category + " category located on " + streetAddress + ", " + addressLocality + ", " + addressRegion + ", " + postalCode;
+        } else if (url.indexOf("menu") > -1) {
+            if (url.indexOf("item") > -1) {
+                String recipes = url.substring(url.lastIndexOf('/') + 1, url.length());
+                query = "recipes of " + recipes.replace("-", " ");
+            } else {
+                query = doc.title().replaceFirst("-", "Restaurant").replaceFirst("-", "in");
             }
-            else if(url.indexOf("menu")>-1)
-            {
-                if(url.indexOf("item")>-1)
-                {
-                    String recipes = url.substring(url.lastIndexOf('/')+1,url.length());
-                    query = "recipes of "+recipes.replace("-"," ");
-                }
-                else
-                {
-                    query = doc.title().replaceFirst("-","Restaurant").replaceFirst("-","in");
-                }
 
-            }
-            else if(url.indexOf("find_desc")>-1 && url.indexOf("find_loc")>-1)
-            {
-                String findDesc = doc.select("span[class=find-desc]").text();
-                String findLoc = doc.select("span[class=find-loc]").text();
-                query = "searching for "+findDesc.trim()+" near "+findLoc.trim();
-            }
+        } else if (url.indexOf("find_desc") > -1 && url.indexOf("find_loc") > -1) {
+            String findDesc = doc.select("span[class=find-desc]").text();
+            String findLoc = doc.select("span[class=find-loc]").text();
+            query = "searching for " + findDesc.trim() + " near " + findLoc.trim();
+        }
 
         return query;
     }
 
 
-//    private static void startNLP() throws IOException {   -- for chinese words
-//        File file = new File(".");
-//        String path = file.getCanonicalPath() + "/data";
-//
-//        Properties props = new Properties();
-//        props.setProperty("sighanCorporaDict", path);
-//        props.setProperty("serDictionary", path + "/dict-chris6.ser.gz");
-//        props.setProperty("inputEncoding", "UTF-8");
-//        props.setProperty("sighanPostProcessing", "true");
-//
-//        segmenter = new CRFClassifier<CoreLabel>(props);
-//        segmenter.loadClassifierNoExceptions(path + "/ctb.gz", props);
-//    }
+    //    private static void startNLP() throws IOException {   -- for chinese words
+    //        File file = new File(".");
+    //        String path = file.getCanonicalPath() + "/data";
+    //
+    //        Properties props = new Properties();
+    //        props.setProperty("sighanCorporaDict", path);
+    //        props.setProperty("serDictionary", path + "/dict-chris6.ser.gz");
+    //        props.setProperty("inputEncoding", "UTF-8");
+    //        props.setProperty("sighanPostProcessing", "true");
+    //
+    //        segmenter = new CRFClassifier<CoreLabel>(props);
+    //        segmenter.loadClassifierNoExceptions(path + "/ctb.gz", props);
+    //    }
 
     public static void main(String[] args) throws Exception {
-//        logger.setLevel(Level.INFO);            //Set the logging level here -- For Chinese Words
-//
-//        logger.info("loading stopwords...");
-//        stopWords = loadStopWords();
-//        logger.info("...stopwords loaded");
-//        logger.info("starting NLP...");
-//        startNLP();
-//        logger.info("...NLP started");
+        //        logger.setLevel(Level.INFO);            //Set the logging level here -- For Chinese Words
+        //
+        //        logger.info("loading stopwords...");
+        //        stopWords = loadStopWords();
+        //        logger.info("...stopwords loaded");
+        //        logger.info("starting NLP...");
+        //        startNLP();
+        //        logger.info("...NLP started");
 
         Server server = new Server(Integer.valueOf(System.getenv("PORT")));
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
