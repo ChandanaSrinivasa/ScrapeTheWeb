@@ -349,7 +349,7 @@ public class Main extends HttpServlet {
             String addressRegion = doc.select("span[itemprop=addressRegion]").text();
             String postalCode = doc.select("span[itemprop=postalCode]").text();
 
-            query = "searching for " + title.substring(0, title.indexOf('-') - 1) + " in " + category + " category located on " + streetAddress + ", " + addressLocality + ", " + addressRegion + ", " + postalCode;
+            query = "taxi for " + title.substring(0, title.indexOf('-') - 1);
         } else if (url.indexOf("menu") > -1) {
             if (url.indexOf("item") > -1) {
                 String recipes = url.substring(url.lastIndexOf('/') + 1, url.length());
